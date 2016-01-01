@@ -1,5 +1,5 @@
 import './tree.css'
-import d3 from "d3"
+//import d3 from "d3"
 import renderNodes from './nodes'
 import renderLinks from './links'
 
@@ -14,14 +14,14 @@ function tree(){
 
   instance.dom = dom=>(state.dom=dom, instance)
   instance.flow = flow=>(state.flow=flow, track(flow,state), instance)
-  instance.render = (...data)=>render(...data, state)
+  instance.render = (...data)=>render(state, ...data)
 
   return instance
 }
 
 function track(f,s){
   render(s, 'start', toObj(f), null, null)
-  flow.logger((flow, name, newData, oldData)=>{
+  nflow.logger((flow, name, newData, oldData)=>{
     render(s, name, toObj(flow), toObj(newData), toObj(oldData))
   })
 }
@@ -34,7 +34,7 @@ function toObj(d){
 
 function render(s, name, ...data){
   if (!s.d3dom) init(s);
-  console.log('action', name, data)
+  //console.log('action', name, data)
   actions[name] && actions[name](s, ...data)
   resizeSvg(s)
 
@@ -44,13 +44,15 @@ function render(s, name, ...data){
   //Normalize for fixed-depth.
   s.nodes.forEach(function(d) { d.y = d.depth * 60; });
   
-  renderNodes(s)
-  renderLinks(s)
+  s.render()
 }
 
 function init(s){
   s.nodeMap = {}
   s.tree = d3.layout.tree()
+
+  //s.tree.nodeSize(function(d){ return [60,90]})
+  //s.tree.separation((a,b)=>Math.min(1,b.name.length))
   s.diagonal = d3.svg.diagonal()
   s.d3dom = d3.select(s.dom)
   s.width = parseInt(s.d3dom.style('width'))
@@ -58,20 +60,52 @@ function init(s){
   s.svg = s.d3dom
     .html("")
     .append("svg")
-  s.svgg = s.svg.append("g")
+
+  s.d3g = s.svg
+    .append('g')
+    .call(d3.behavior.zoom().scaleExtent([.2, 8]).on("zoom", zoom))
+    .append('g')
+
+  s.d3g.append("rect")
+    .attr("class", "overlay")
+    .attr("width", s.width)
+    .attr("height", s.height);
+
+  s.d3links = s.d3g.append("g")
+  s.d3routes= s.d3g.append("g").classed('routes', true)
+  s.d3nodes = s.d3g.append("g")
   s.margin = {top: 20, right: 40, bottom: 20, left: 20}
   s.delay = 0
   s.duration = 600
   s.nodes = []
   s.links = []
-  
-  s.svgg
+  s.showRoute = null;
+  s.d3g
       .attr("transform"
-        , "translate(" + s.margin.left + "," + s.margin.top + ")");
+        , "translate(" + s.margin.left + "," + s.margin.top + ")")
 
   s.diagonal
     .projection(function(d) { return [d.x, d.y]; });
+
+  s.render = ()=>{
+
+    renderNodes(s)
+    renderLinks(s)
+  }
+
+  function zoom() {
+    s.d3g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+  }
 }
+
+
+
+actions.listenerAdded = 
+  actions.listenerRemoved = (s, f, newData, oldData)=>{
+    var e = s.nodeMap[f.guid]
+    if (!e) return
+    e.source = f
+  }
 
 actions.start = (s, f, newData, oldData)=>{
   s.root = {
@@ -80,7 +114,8 @@ actions.start = (s, f, newData, oldData)=>{
       parent: null,
       children: [],
       isNew: true,
-      numInstances:1
+      numInstances:1,
+      source: f
     }
   s.nodeMap[s.root.id]= s.root
 }
@@ -98,7 +133,8 @@ actions.create = (s, f, newData, oldData)=>{
       isNew: true,
       numInstances:1,
       x0: p.x0,
-      y0: p.y0
+      y0: p.y0,
+      source: newData
     }
 
     if (existingNode){
@@ -111,9 +147,23 @@ actions.create = (s, f, newData, oldData)=>{
   }
 
 actions.emit = (s, f, newData, oldData)=>{
-  var e = s.nodeMap[newData.guid]
+  var e = s.nodeMap[f.guid]
   if (!e) return
+  e.source=f
   e.isFlow = true;
+
+}
+actions.emitted = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[f.guid]
+  if (!e) return
+  e.source=f
+  
+}
+
+actions.cancel = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[f.guid]
+  if (!e) return
+  e.source=f
 }
 
 actions.childRemoved = (s, f, oldParent)=>{

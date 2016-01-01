@@ -1,8 +1,9 @@
 import {RADIUS} from './paths'
+import utils from './utils'
 
 export default function renderLinks(s){
   // Update the links
-  var link = s.svgg.selectAll("path.link")
+  var link = s.d3links.selectAll("path.link")
     .data(s.links, function(d) { return d.target.id; });
   // Enter any new links at the parent's previous position.
   link.enter().insert("path", "g")
@@ -20,12 +21,14 @@ export default function renderLinks(s){
       
       return s.diagonal({
         source: { x: d.source.x, y:d.source.y }
-      , target: { x: d.target.x, y:d.target.y-RADIUS+1 }
+      , target: { x: d.target.x, y:d.target.y}//-RADIUS+1 }
       });
     });
 
-  link.classed('is-flow', d=>d.target.isFlow)
-  link.classed('is-removed', d=>d.target.isRemoved)
+  link
+    .classed('is-flow', d=>d.target.isFlow)
+    .classed('is-removed', d=>d.target.isRemoved)
+    .classed('is-cancelled', d=>utils.parentCancelled(d.target))
   // Transition exiting nodes to the parent's new position.
   link.exit()
     .remove();

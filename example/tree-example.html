@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/dist/nflow-vis.css">
+  <!--[if IE]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <script src="/node_modules/d3/d3.js"></script>
+  <script src="/node_modules/nflow/dist/nflow.js"></script>
+  <script src="/dist/nflow-vis.js"></script>
+  <style type="text/css">
+    figure{
+      height: 400px;
+      width: 800px;
+    }
+  </style>
+</head>
+
+<body id="home">
+
+  <h1>nFlow-vis example</h1>
+  <figure class='example1'  ></figure>
+  <script type="text/javascript">(function(){
+    
+    var dom = d3.select('.example1')
+    nflow.enableDevTools()
+    var f = nflow.create('f').parent(null)
+    tree()
+      .dom(dom.node())
+      .flow(f)
+
+    var a = f.create('a')
+      .on('foo', function(){})
+      .on('bar', function(){})
+      .on('dog', function(){})
+      .on('hello', function(){})
+
+    f.create('beta')
+    var c = f.create('c')
+
+    var e = c.create('e')
+      .on('bar', function(){ console.warn('DAFUQ!')})
+    
+    e.create('foxtrot')
+      .on('bar', function(){})
+
+    var g = e.create('g')
+    g.cancel()
+
+    f.create('d')
+      .on('hello', function(){})
+
+    c.emit('hello')
+    g.emit('hello')
+    g.emit('helo')
+
+    f.emit('bar')
+  }())</script>
+
+</body>
+</html>
