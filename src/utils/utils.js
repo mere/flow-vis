@@ -21,4 +21,17 @@ utils.isRecipient = (node,s)=>{
     .some(f=>f.flow.guid==node.id)
 }
 
+utils.assert = (condition, error, val)=>{
+  if (condition) {
+    throw new Error(error
+      .replace("%s", val))
+  }
+  return condition
+}
+
+utils.toObj = (d)=>{
+  return d && d.name && d.name.isFlow
+    ? d.toObj()
+    : d
+}
 export default utils

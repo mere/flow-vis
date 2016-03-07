@@ -11,8 +11,9 @@
   <script src="/dist/nflow-vis.js"></script>
   <style type="text/css">
     figure{
-      height: 400px;
-      width: 800px;
+      height: 300px;
+      width: 400px;
+      display: inline-block;
     }
   </style>
 </head>
@@ -21,15 +22,24 @@
 
   <h1>nFlow-vis example</h1>
   <figure class='example1'  ></figure>
+  <figure>
+    <svg width=100% height=100% >
+      <g width="400" height="300" class="example2"></g>
+    </svg>
+  </figure>
   <script type="text/javascript">(function(){
     
-    var dom = d3.select('.example1')
-    nflow.enableDevTools()
-    var f = nflow.create('f').parent(null)
-    tree()
-      .dom(dom.node())
-      .flow(f)
-
+    var dom = d3.select('.example1').node()
+    nFlow.enableDevTools()
+    var f = nFlow.create('f').parent(null)
+    var parser = nFlowVis.Vis()
+      .call(nFlowVis.Tree)
+      .emit('dom', dom)
+      .emit('track', f)
+      //.emit('show-events', false)
+      //.emit('allow-dragging', false)
+      //.emit('type', 'cluster')
+      
     var a = f.create('a')
       .on('foo', function(){})
       .on('bar', function(){})
@@ -39,22 +49,33 @@
     f.create('beta')
     var c = f.create('c')
 
-    var e = c.create('e')
-      .on('bar', function(){ console.warn('DAFUQ!')})
+    c.create('x')
+    var e = c.create('position-service')
+      .on('bar', function(){ })
     
     e.create('foxtrot')
       .on('bar', function(){})
 
     var g = e.create('g')
-    g.cancel()
-
+    
     f.create('d')
       .on('hello', function(){})
 
-    c.emit('hello')
+    c.emit('hello').emit('bar')
+    c.emit('hello').emit('bar')
+    c.emit('hello').emit('bar')
+    c.emit('hello').emit('bar')
+    c.emit('hello').emit('bar')
+      .call(f=>{
+        f.emit('cat')
+        f.emit('dog')
+      })
+    c.emit('hello').emit('bar')
+    c.emit('foo')
     g.emit('hello')
     g.emit('helo')
 
+    g.cancel()
     f.emit('bar')
   }())</script>
 

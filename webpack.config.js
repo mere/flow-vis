@@ -17,6 +17,9 @@ module.exports = {
     libraryTarget: 'this',
     publicPath: 'http://' + hostname + ':' + port + '/dist/'
   },
+  externals: {
+    'nFlow':'nFlow'
+  },
   resolve:{
     root: path.resolve(__dirname, 'src'),
   },
@@ -26,7 +29,7 @@ module.exports = {
         , exclude: /node_modules/
         , loader: 'babel'
         , query: { presets: ['es2015', 'stage-0'] }},
-      { test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader") }
+      { test: /\.scss$/, loader: ExtractTextPlugin.extract("style-loader", ["css-loader", "sass-loader"]) }
     ]
   },
   stats: {

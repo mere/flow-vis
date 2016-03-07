@@ -1,5 +1,5 @@
 import {CIRCLE, DROP, RADIUS} from './paths'
-import utils from './utils'
+import utils from '../utils/utils'
 
 export default function renderNodes(s){
   // Update the nodes…

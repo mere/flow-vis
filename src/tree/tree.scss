@@ -1,0 +1,111 @@
+body, html {
+  height:100%;
+}
+
+.nflow-vis-tree{
+  border: 1px solid #330000;
+
+
+
+  .node {
+      cursor: pointer;
+
+      path {
+        fill: rgba(255,255,255,.95);
+        stroke: #159957;
+        stroke-width: 2px;
+      }
+      
+      path.is-flow {
+        fill: #C1E0F5;
+        stroke: #1f8dd6;
+        stroke-width: 2px;
+      }
+      
+      &.is-parent-cancelled path.is-flow {
+        fill: #F5C1C1;
+        stroke: #F68E8E;
+      }
+
+      text {
+        font-size: 1.1rem;
+        fill: #606c71;
+        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
+    }
+
+    .link {
+      fill: none;
+      stroke: #606c71;
+      stroke-width: 2px;
+      transition: stroke-dashoffset 1s ease-in-out;
+       
+    }
+
+    .route .link {
+      fill: none;
+      stroke-linecap: round;
+      stroke: #1f8dd6;
+      stroke-width: 5px;
+      animation: dash .5s linear infinite;
+      stroke-dasharray: 1 10;
+      stroke-dashoffset: 0;
+    }
+
+    @keyframes dash{
+      to{
+        stroke-dashoffset: 10;
+      }
+    }
+
+    .link.is-flow{
+      stroke-dasharray: 5,5;
+    }
+
+    .link.is-removed{
+      stroke-dasharray: 250;
+      stroke-dashoffset: -250;
+    }
+
+  .listener {
+    fill: #C1E0F5;
+    stroke: none;
+  }
+  .listener:hover {
+    fill: #1f8dd6;
+  }
+
+  .link.is-cancelled {
+    stroke: #F68E8E;
+  }
+
+  .is-parent-cancelled path {
+    fill: #F5C1C1;
+    stroke: #F68E8E;
+  }
+
+  .has-no-recipients path.is-flow{
+    stroke:#7A7A7A;
+    fill: #DBDBDB;
+  }
+
+  .is-cancelled .listener {
+    fill: #F5C1C1;  
+  }
+  .is-cancelled path {
+    fill: #F5C1C1;
+    stroke: #991515;
+  }
+
+  .is-recipient path {
+    stroke: #1f8dd6;
+    fill: #C1E0F5;
+  }
+  .is-recipient text {
+    font-weight: bold;
+  }
+  .overlay {
+    fill: none;
+    pointer-events: all;
+  }
+}
