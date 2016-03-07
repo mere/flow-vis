@@ -63,7 +63,6 @@ function update(d){
     fd.nodesByDepth.forEach((nodes,i)=>{
       nodes.reduce((a,b)=>{
         let distance = b.x-a.x
-        console.log(i, a.name, distance)
         a.recurring= (a.name==b.name) && distance<a.name.length*18
         return b
       })

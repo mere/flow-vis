@@ -21,7 +21,8 @@ function dom(dom){
  function render(){
   
   let tree = this.target.parent()
-  let d = this.target.data()
+  let flow = this.target
+  let d = flow.data()
   let td = tree.data()
   let d3dom = td.d3links
   let links = td.links
@@ -43,16 +44,10 @@ function dom(dom){
   link.transition()
     .duration(td.duration)
     .delay(d=>d.target.isNew?td.delay:0)
-    .attr("d", function(d0) {
-      
-      return d.diagonal({
-        source: { x: d0.source.x, y:d0.source.y }
-      , target: { x: d0.target.x, y:d0.target.y}//-RADIUS+1 }
-      });
-    });
+    .attr("d", getCoords.bind(flow));
 
   link
-    .classed('is-flow', d=>d.target.isFlow)
+    .classed('is-flow', d=>d.target.isEvent)
     .classed('is-removed', d=>d.target.isRemoved)
     .classed('is-cancelled', d=>utils.parentCancelled(d.target))
   // Transition exiting nodes to the parent's new position.
@@ -111,12 +106,13 @@ function updateRoutes(data){
     .insert("path", "g")
     .attr("class", "link")
 
-  links.attr("d", function(d0) {
-    var upstream = d0.source.y>d0.target.y
-    
-    return d.diagonal({
-      source: { x: d0.source.x, y:d0.source.y }
-    , target: { x: d0.target.x, y:d0.target.y}
-    });
-  });
+  links.attr("d", getCoords.bind(flow));
+}
+
+
+function getCoords(d){
+  return this.data().diagonal({
+      source: { x: d.source.x, y:d.source.y }
+    , target: { x: d.target.x, y:d.target.y -(d.target.isEvent?7:0) }
+    })
 }

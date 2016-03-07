@@ -23,7 +23,6 @@ body, html {
       }
       
       &.is-parent-cancelled path.is-flow {
-        fill: #F5C1C1;
         stroke: #F68E8E;
       }
 
@@ -80,7 +79,6 @@ body, html {
   }
 
   .is-parent-cancelled path {
-    fill: #F5C1C1;
     stroke: #F68E8E;
   }
 
@@ -93,7 +91,6 @@ body, html {
     fill: #F5C1C1;  
   }
   .is-cancelled path {
-    fill: #F5C1C1;
     stroke: #991515;
   }
 
