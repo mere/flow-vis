@@ -3,9 +3,10 @@ body, html {
 }
 
 .nflow-vis-tree{
-  border: 1px solid #330000;
-
-
+  &.timeline line{
+    stroke: #eeeeee;
+    stroke-width: 2px;
+  }
 
   .node {
       cursor: pointer;
@@ -99,6 +100,13 @@ body, html {
     fill: #C1E0F5;
   }
   .is-recipient text {
+    font-weight: bold;
+  }
+  .is-emitter path {
+    stroke: #1f8dd6;
+    fill: #1F8DD6;
+  }
+  .is-emitter text {
     font-weight: bold;
   }
   .overlay {

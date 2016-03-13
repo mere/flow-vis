@@ -30,8 +30,6 @@ export default (parent)=>{
   }
 }
 
-
-
 actions.listenerAdded = 
   actions.listenerRemoved = (s, f, newData, oldData)=>{
     var e = s.nodeMap[f.guid]

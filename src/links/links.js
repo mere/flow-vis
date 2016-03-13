@@ -14,7 +14,6 @@ export default (parent)=>(
 
 function dom(dom){
   this.target.data().dom = dom
-  this.stopPropagation()
 }
 
 
@@ -25,10 +24,13 @@ function dom(dom){
   let d = flow.data()
   let td = tree.data()
   let d3dom = td.d3links
-  let links = td.links
+  let links = td.links.filter(link=>(
+      !link.source.f.hidden 
+      && !link.target.f.hidden 
+    ))
   // Update the links
   var link = d3dom.selectAll("path.link")
-    .data(links, function(d) { return d.target.guid; });
+    .data(links, function(d) { return d.target.f.guid; });
   // Enter any new links at the parent's previous position.
   link.enter().insert("path", "g")
     .attr("class", "link")
@@ -43,12 +45,12 @@ function dom(dom){
   // Transition links to their new position.
   link.transition()
     .duration(td.duration)
-    .delay(d=>d.target.isNew?td.delay:0)
+    .delay(d=>d.target.f.isNew?td.delay:0)
     .attr("d", getCoords.bind(flow));
 
   link
-    .classed('is-flow', d=>d.target.isEvent)
-    .classed('is-removed', d=>d.target.isRemoved)
+    .classed('is-flow', d=>d.target.f.isEvent)
+    .classed('is-removed', d=>d.target.f.isRemoved)
     .classed('is-cancelled', d=>utils.parentCancelled(d.target))
   // Transition exiting nodes to the parent's new position.
   link.exit()
@@ -64,9 +66,8 @@ function updateRoutes(data){
   let td = tree.data()
   let d3dom = td.d3nodes
   let nodes = td.nodes
-
   if (!td.showRoute
-    ||! td.showRoute.source.recipients) {
+    ||! td.showRoute.f.source.recipients) {
     td.d3routes.html('')
     return;
   };
@@ -77,15 +78,12 @@ function updateRoutes(data){
 
   var paths = td.d3routes
     .selectAll("g.route")
-    .data(td.showRoute.source.recipients, d=>d.flow.guid);
+    .data(td.showRoute.f.source.recipients, d=>d.flow.guid);
 
   paths
     .enter()
     .append('g')
     .classed('route', true)
-
-  //paths.attr("transform", (d,i)=>
-  //  "translate(" + (i*3) + ",0)");
 
   var links = paths
     .selectAll('path.link')
@@ -93,12 +91,16 @@ function updateRoutes(data){
       var r = d.route.concat()
       var pairs = []
       while (r.length>1) {
-
         pairs.push({
-          source:data.nodeMap[r[0].guid],
-          target:data.nodeMap[r[1].guid]})
+          source:td.nodeMap[r[0].guid],
+          target:td.nodeMap[r[1].guid]})
         r.shift()
       }
+      pairs = pairs
+        .filter(pair=>(pair.source && pair.target))
+        .filter(pair=>(
+          !pair.source.f.hidden 
+       && !pair.target.f.hidden))
       return pairs
     })
 
@@ -109,10 +111,9 @@ function updateRoutes(data){
   links.attr("d", getCoords.bind(flow));
 }
 
-
 function getCoords(d){
   return this.data().diagonal({
       source: { x: d.source.x, y:d.source.y }
-    , target: { x: d.target.x, y:d.target.y -(d.target.isEvent?7:0) }
+    , target: { x: d.target.x, y:d.target.y -(d.target.f.isEvent?7:0) }
     })
 }

@@ -13,25 +13,26 @@ export default (parent)=>(
       dom: null,
       duration: 500,
       delay: 0,
-      allowDragging: true,
+      dragging: true, //true, false, horizontal
       showEvents: true,
       nodes:null,
-      links:null
+      links:null,
+      maxBatchLength: 7
     })
     .on('update', update
                 , render)
     .on('dom'   , dom
                 , init
                 , resize)
-    .on('allow-dragging', allowDragging)
+    .on('dragging', dragging)
     .on('show-events', showEvents)
     .on('show-route', showRoute)
     .on('type', setType)
     .call(f=>setType.call(f))
 )
 
-function allowDragging(flag){
-  this.target.data().allowDragging = flag
+function dragging(flag){
+  this.target.data().dragging = flag
 }
 
 function showEvents(flag){
@@ -48,22 +49,29 @@ function update(d){
   var flow = this.target
   var tree = flow.data().tree
   var fd = flow.data()
+  var pd = flow.parent().data()
   fd.nodesByDepth = []
   if (d){
-    fd.nodes = tree.nodes(d.root)//.reverse(),
+    var root = {
+      f: (pd && pd.eventRoot) || d.root
+    }
+    fd.nodes = tree.nodes(root)//.reverse(),
     fd.links = tree.links(fd.nodes);
+    fd.nodeMap = {}
     fd.nodes.forEach(function(d) {
       if (!fd.nodesByDepth[d.depth]) fd.nodesByDepth[d.depth] = []
       fd.nodesByDepth[d.depth].push(d)
-      d.y = d.depth * 50+50;
+      fd.nodeMap[d.f.guid]= d
+      //d.y0 =d.y = d.depth*50+Math.random()*50
+      d.y = d.depth * (root.f.hidden?40:50)+ (root.f.hidden?0:50);
       d.x+=fd.width/2
-      d.x0 = d.x0||(d.parent?d.parent.x0:d.x)
-      d.y0 = d.y0||(d.parent?d.parent.y0:d.y)
+      d.x0 = d.x0||(d.parent&&!d.parent.f.hidden?d.parent.x0:d.x)
+      d.y0 = d.y0||(d.parent&&!d.parent.f.hidden?d.parent.y0:d.y)
     });
     fd.nodesByDepth.forEach((nodes,i)=>{
       nodes.reduce((a,b)=>{
         let distance = b.x-a.x
-        a.recurring= (a.name==b.name) && distance<a.name.length*18
+        a.recurring= (a.f.name==b.f.name) && distance<a.f.name.length*18
         return b
       })
     })
@@ -78,6 +86,7 @@ function dom(dom){
 
 function setType(type='tree'){
   let f = this.target || this
+
   let d = f.data()
   d.type = type
   if (type=='tree') {
@@ -88,15 +97,15 @@ function setType(type='tree'){
   } 
   d.tree
     .separation((a,b)=>{
-         return (a.name == b.name)
+         return (a.f.name == b.f.name)
           ? .05
-          : .5+b.name.length*.1
+          : .5+b.f.name.length*.1
       })
     .nodeSize([80,50])
     .children((e)=>(
       d.showEvents
-        ? e.children
-        : e.children&&e.children.filter(e=>!e.isEvent)
+        ? e.f.children.map(e=>({ f:e }))
+        : e.f.children && e.f.children.filter(e=>!e.isEvent).map(e=>({ f:e }))
       ))
   
 }
@@ -113,9 +122,12 @@ function init(){
     .append('g')
     .classed('drag', true)
   
-  d.allowDragging 
+  d.dragging 
     && d.d3g
-    .call(d3.behavior.zoom().scaleExtent([.2, 1]).on("zoom", zoom))
+   .call(d3.behavior.zoom()
+      .scaleExtent([.2, 1])
+      .on("zoom", zoom))
+    //.call(zoom)
 
   d.d3overlay = d.d3g.append("rect")
     .classed("overlay", true)
@@ -131,12 +143,17 @@ function init(){
     .classed('nodes', true)
 
   
-  this.target
-    .get('links')
-    .emit('dom', d.d3links.node())
+  // this.target
+  //   .get('links')
+  //   .emit.downstream('dom', d.d3links.node())
 
   function zoom() {
-    d.d3contents.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    var t = d3.event.translate,
+        s = d3.event.scale;
+    if (d.dragging=='horizontal') t[1] = 0
+    //zoom.translate(t);
+    d.d3contents
+      .attr("transform", "translate(" + t + ")scale(" + s + ")");
   }
 
 }
@@ -150,7 +167,6 @@ function render(){
 }
 
 function resize(){
-  this.stopPropagation()
   let d = this.target.data()
   let d3dom = d3.select(d.dom)
   d.width = d.isSVG 
@@ -160,8 +176,6 @@ function resize(){
     ? parseInt(d3dom.attr('height'))
     : parseInt(d3dom.style('height'))
 
-  //d.tree.size([d.width, d.height])
-  console.log(d)
   d.d3svg
     .attr("width", d.width)
     .attr("height", d.height);
@@ -170,5 +184,6 @@ function resize(){
     .attr("width", d.width)
     .attr("height", d.height);
 }
+
 
 

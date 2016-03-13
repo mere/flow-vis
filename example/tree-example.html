@@ -11,35 +11,59 @@
   <script src="/dist/nflow-vis.js"></script>
   <style type="text/css">
     figure{
-      height: 300px;
-      width: 400px;
+      height: 500px;
+      width: 800px;
       display: inline-block;
+      margin:4px;
+      border: 1px dashed #334455;
     }
+
   </style>
 </head>
 
 <body id="home">
 
   <h1>nFlow-vis example</h1>
-  <figure class='example1'  ></figure>
-  <figure>
+  
+  <figure >
     <svg width=100% height=100% >
-      <g width="400" height="300" class="example2"></g>
+      <g width="800" height="300" class="tree"></g>
+      class="example2"></g>
+      <g width="800" height="200" transform="translate(0,300)"class="timeline"></g>
     </svg>
   </figure>
+  
   <script type="text/javascript">(function(){
     
-    var dom = d3.select('.example1').node()
     nFlow.enableDevTools()
     var f = nFlow.create('f').parent(null)
-    var parser = nFlowVis.Vis()
-      .call(nFlowVis.Tree)
-      .emit('dom', dom)
-      .emit('track', f)
-      //.emit('show-events', false)
+    var vis = nFlowVis.Vis()
+    
+    
+    vis.emit('track', f)
+    
+    var tree =  nFlowVis.Tree()
+    tree.emit.downstream('dom', d3.select('.tree').node())
+    tree.emit('show-events', false)
+    tree.parent(vis)
       //.emit('allow-dragging', false)
       //.emit('type', 'cluster')
+    
+    // var dispatchers = nFlowVis.Tree()
+    //   .name('dispatcher-tree')
+    //   .parent(vis)
+
+    var timeline = nFlowVis.Timeline()
       
+    timeline.emit.downstream('dom', d3.select('.timeline').node())
+    timeline.parent(vis)
+    // dispatchers
+    //   .emit.downstream('dom', d3.select('.example2').node())
+    // dispatchers
+    //   .emit.downstream('show-events', false)
+
+
+
     var a = f.create('a')
       .on('foo', function(){})
       .on('bar', function(){})
@@ -61,13 +85,13 @@
     f.create('d')
       .on('hello', function(){})
 
-    c.emit('hello').emit('bar')
+    c.emit('hello').emit('bar').emit('dog')
     c.emit('hello').emit('bar')
     c.emit('hello').emit('bar')
     c.emit('hello').emit('bar')
     c.emit('hello').emit('bar')
       .call(f=>{
-        f.emit('cat')
+        //f.emit('cat')
         f.emit('dog')
       })
     c.emit('hello').emit('bar')
@@ -76,7 +100,10 @@
     g.emit('helo')
 
     g.cancel()
-    f.emit('bar')
+    setInterval(function(){
+      f.emit('bar')
+    },3500)
+    
   }())</script>
 
 </body>
