@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/nflow-vis.js",
   "dependencies": {
+    "nflow": "^0.1.5",
     "webpack": "^1.12.8"
   },
   "devDependencies": {
@@ -14,7 +15,9 @@
     "css-loader": "^0.23.1",
     "d3": "^3.5.12",
     "extract-text-webpack-plugin": "^0.9.1",
-    "nflow": "^0.1.2",
+    "nflow": "^0.1.4",
+    "node-sass": "^3.4.2",
+    "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.8",
     "webpack-dev-server": "^1.14.0"
