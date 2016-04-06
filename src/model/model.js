@@ -1,8 +1,8 @@
-import nFlow from 'nFlow'
+import nflow from 'nflow'
 
 export default (parent)=>(
 
-  nFlow.create('model')
+  nflow.create('model')
     .parent(parent)
     .data({
       root: null,

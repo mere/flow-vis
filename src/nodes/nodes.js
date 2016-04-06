@@ -1,8 +1,9 @@
 import {RADIUS, CIRCLE, DROP} from '../utils/paths'
 import utils from '../utils/utils'
+import nflow from 'nflow'
 
 export default (parent)=>(
-  nFlow.create('nodes')
+  nflow.create('nodes')
     .parent(parent)
     .data({
       dom: null,
@@ -23,18 +24,18 @@ function dom(dom){
   let d = this.target.data()
   let td = tree.data()
   let d3dom = td.d3nodes
-  let nodes = td.nodes.filter(e=>!e.f.hidden)
-  
+  let nodes = td.nodes.filter(e=>!e.hidden)
   // Update the nodes
   var node = d3dom.selectAll("g.node")
-    .data(nodes, function(d) { return d.f.guid })
+    .data(nodes, function(d) {return d.f.guid })
   
   var nodeEnter = node.enter().append("g")
     .attr("class", "node")
+    .style("opacity", 0)
     .attr("transform", function(d) {
       return "translate(" + d.x0 + "," + d.y0 + ")"; })
-    .on("mouseover", d=>flow.emit('show-route', d))
-    .on("mouseout", d=>flow.emit('show-route', null))
+    .on("click", d=>flow.emit('select-node', d))
+    
 
   nodeEnter.append('path')
     .attr("transform", "scale(.8)")
@@ -43,27 +44,40 @@ function dom(dom){
   nodeEnter.append('g')
     .classed('listeners', true)
 
-  nodeEnter.append("text")
-    .attr("x", RADIUS+4)
+  nodeEnter
+    .append('g')
+    .attr("transform", `translate(${RADIUS+4},0)`)
+    .append("text")
+    .attr("x", 0)
     .attr("dy", ".35em")
     .style("fill-opacity", .1);
 
-  // Transition nodes to their new position.
-  var nodeUpdate = node.transition()
+  var changedNodes = node
+    .filter(d=>{
+      return d.needsUpdate
+    })
+  
+  console.log('changedNodes', changedNodes.size())
+  var nodeUpdate = changedNodes
+    .transition()
+    .delay(d=>d.updateIndex*td.delay)
+    .style("opacity", 1)
     .duration(td.duration)
-    .delay(d=>d.f.isNew?td.delay:0)
     .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
     .each("end", function(d){
-      d.x0 = d.x
-      d.y0 = d.y
-      delete d.f.isNew
+      d3.select(this)
+        .select("text")
+        .text(d=>d.displayName)
+        .style("fill-opacity", 1)
+        .each(utils.wrapText(120))
+        .each(utils.fitText(70))
     });
-
-  node
+  
+  changedNodes
     .select('path')
     .classed('is-flow', d=>d.f.isEvent)
   
-  node
+  changedNodes
     .classed('is-cancelled', d=>d.f.source.status=='CANCELLED')
     .classed('is-parent-cancelled', d=>utils.parentCancelled(d))
     .classed('is-recipient', d=>utils.isRecipient(d,td))
@@ -75,15 +89,8 @@ function dom(dom){
     .select("path")
     .attr('d', d=>d.f.isEvent? DROP : CIRCLE)
 
-  nodeUpdate.select("text")
-    .text(d=>d.recurring?'':d.f.name)
-    .style("fill-opacity", 1);
-
-  
-  //TODO: Transition hidden nodes to the parent's new position.
   var nodeExit = node.exit()
     .remove();
-
 }
 
 

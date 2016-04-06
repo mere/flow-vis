@@ -1,8 +1,8 @@
-import nFlow from 'nFlow'
+import nflow from 'nflow'
 var actions  = {}
 
 export default (parent)=>{
-  var f = nFlow.create('actions')
+  var f = nflow.create('actions')
     .parent(parent)
     .on('action', parseAction)
   
@@ -17,6 +17,9 @@ export default (parent)=>{
       actions[name](s, ...data)
       throttledUpdate()
     }
+    else {
+      console.warn('no parser found for "'+name+'"', data)
+    }
   }
 
   function throttledUpdate(){
@@ -25,6 +28,7 @@ export default (parent)=>{
     throttledUpdate.timer = setTimeout(()=>{
       delete throttledUpdate.timer;
       var s = f.emit('get-model').data()
+      //console.log('update', s)
       f.emit('update', s)
     }, 200)
   }
@@ -35,44 +39,47 @@ actions.listenerAdded =
     var e = s.nodeMap[f.guid]
     if (!e) return
     e.source = f
+    updateHash(e)
   }
 
 actions.start = (s, f, newData, oldData)=>{
+  console.log('starting', s, f)
   s.root = {
       name: f.name,
       guid: f.guid,
       parent: null,
       children: [],
-      isNew: true,
       numInstances:1,
       source: f
     }
+  updateHash(s.root)
   s.nodeMap[s.root.guid]= s.root
 }
 
 actions.create = (s, f, newData, oldData)=>{
+  if (!s.root) actions.start(s, f, newData, oldData)
+
     var p = s.nodeMap[f.guid]
     if (!p) return;
     p.children = p.children || [];
     var existingNode = p.children.filter(c=>c.name==newData.name).pop()
-    s.nodeMap[newData.guid] = {
+    var e = s.nodeMap[newData.guid] = {
       name: newData.name,
       guid: newData.guid,
       children: [],
-      isNew: true,
       numInstances:1,
       x0: p.x0,
       y0: p.y0,
       source: newData
     }
-
+    updateHash(e)
     // if (existingNode){
     //   removeNode(existingNode,s)
     //   s.nodeMap[newData.guid].numInstances+=existingNode.numInstances
     //   s.nodeMap[newData.guid].isNew= false
     // }
     
-    p.children.push(s.nodeMap[newData.guid])
+    p.children.push(e)
   }
 
 actions.emit = (s, f, newData, oldData)=>{
@@ -80,31 +87,49 @@ actions.emit = (s, f, newData, oldData)=>{
   if (!e) return
   e.source=f
   e.isEvent = true;
+  updateHash(e)
+}
 
+actions.name = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[f.guid]
+  if (!e) return
+  e.source=f
+  e.name = f.name
+  updateHash(e)
+}
+
+actions.data = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[f.guid]
+  if (!e) return
+  e.data = newData
+  //updateHash(e)
 }
 actions.emitted = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
   e.source=f
-  
+  updateHash(e)
 }
 
 actions.cancel = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
   e.source=f
+  updateHash(e)
 }
 
 actions.childRemoved = (s, f, oldParent)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
   e.isRemoved = true
+  updateHash(e)
 }
 
 actions.childAdded = (s, f, newParent, oldParent)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
   e.isRemoved = newParent==null
+  updateHash(e)
   
   // remove child from old parent
   var oldP = oldParent && s.nodeMap[oldParent.guid]
@@ -123,4 +148,17 @@ function removeNode(d,s){
   d.childen && d.children.forEach(n=>removeNode(n,s))
   if (d.parent) d.parent.children = d.parent.children.filter(n=>n.guid!=d.guid)
   delete s.nodeMap[d.guid]
+  
+}
+
+function updateHash(d){
+  d.hash = createGuid()
+}
+
+function createGuid(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    .replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+    });
 }

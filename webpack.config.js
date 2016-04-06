@@ -8,7 +8,7 @@ var port = '4000'
 
 module.exports = {
   entry: {
-    'nflow-vis': './src/',
+    'nflow-vis': './src/'
     //'vendor': ['d3']
   },
   output: {
@@ -18,7 +18,7 @@ module.exports = {
     publicPath: 'http://' + hostname + ':' + port + '/dist/'
   },
   externals: {
-    'nFlow':'nFlow'
+    'nflow':'nflow',
   },
   resolve:{
     root: path.resolve(__dirname, 'src'),

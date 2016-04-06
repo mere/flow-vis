@@ -3,10 +3,14 @@ body, html {
 }
 
 .nflow-vis-tree{
-  &.timeline line{
+  
+  
+  .timeline-bg rect{
+    fill: none;
     stroke: #eeeeee;
     stroke-width: 2px;
   }
+
 
   .node {
       cursor: pointer;
@@ -31,6 +35,8 @@ body, html {
         font-size: 1.1rem;
         fill: #606c71;
         font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        transform-origin: 0 0;
+        alignment-baseline: hanging;
       }
     }
 
@@ -63,8 +69,7 @@ body, html {
     }
 
     .link.is-removed{
-      stroke-dasharray: 250;
-      stroke-dashoffset: -250;
+      stroke: rgba(255,0,0,.05);
     }
 
   .listener {

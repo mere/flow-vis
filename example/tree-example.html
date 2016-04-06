@@ -17,51 +17,37 @@
       margin:4px;
       border: 1px dashed #334455;
     }
-
   </style>
 </head>
 
 <body id="home">
 
-  <h1>nFlow-vis example</h1>
   
-  <figure >
-    <svg width=100% height=100% >
+  
+  <figure class='nflow-debug'>
+    <!-- <svg width=100% height=100% >
       <g width="800" height="300" class="tree"></g>
       class="example2"></g>
       <g width="800" height="200" transform="translate(0,300)"class="timeline"></g>
-    </svg>
+    </svg> -->
   </figure>
   
   <script type="text/javascript">(function(){
     
-    nFlow.enableDevTools()
-    var f = nFlow.create('f').parent(null)
-    var vis = nFlowVis.Vis()
+    var f = nflow.create('f').parent(null)
     
-    
+    // Vis
+    var vis = nflowVis.Debug()
+    vis.emit('dom', d3.select('.nflow-debug').node())
     vis.emit('track', f)
     
-    var tree =  nFlowVis.Tree()
-    tree.emit.downstream('dom', d3.select('.tree').node())
-    tree.emit('show-events', false)
-    tree.parent(vis)
-      //.emit('allow-dragging', false)
-      //.emit('type', 'cluster')
+    // var tree =  nflowVis.Tree(vis)
+    // tree.emit.downstream('dom', d3.select('.tree').node())
+    // tree.emit('show-events', false)
+   
+    // var timeline = nflowVis.Timeline(vis)   
+    // timeline.emit.downstream('dom', d3.select('.timeline').node())
     
-    // var dispatchers = nFlowVis.Tree()
-    //   .name('dispatcher-tree')
-    //   .parent(vis)
-
-    var timeline = nFlowVis.Timeline()
-      
-    timeline.emit.downstream('dom', d3.select('.timeline').node())
-    timeline.parent(vis)
-    // dispatchers
-    //   .emit.downstream('dom', d3.select('.example2').node())
-    // dispatchers
-    //   .emit.downstream('show-events', false)
-
 
 
     var a = f.create('a')
@@ -70,15 +56,23 @@
       .on('dog', function(){})
       .on('hello', function(){})
 
-    f.create('beta')
+    a.name('new-a')
+
+    a.create('hello-world.long name')
+    a.create('verylongword.foo.anotherlogword.bar')
+
+    f.create('beta').create('services')//.create('something-really-long')
     var c = f.create('c')
 
     c.create('x')
     var e = c.create('position-service')
       .on('bar', function(){ })
     
+    c.create('bar')
     e.create('foxtrot')
+    .parent(null)
       .on('bar', function(){})
+      .create('upload-and-execute-request')
 
     var g = e.create('g')
     
@@ -93,16 +87,19 @@
       .call(f=>{
         //f.emit('cat')
         f.emit('dog')
+          .emit('hey')
       })
     c.emit('hello').emit('bar')
     c.emit('foo')
     g.emit('hello')
     g.emit('helo')
 
-    g.cancel()
-    setInterval(function(){
-      f.emit('bar')
-    },3500)
+     g.cancel()
+    // setInterval(function(){
+    //   f.emit('bar')
+    // },4000)
+
+    f.create('foo').create('bar')
     
   }())</script>
 
