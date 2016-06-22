@@ -23,9 +23,10 @@
     "webpack-dev-server": "^1.14.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server",
-    "dev": "webpack --watch",
+    "build": "webpack --watch",
+    "pretest": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish-to-npm": "webpack",
     "publish-to-npm": "publish"
   },
