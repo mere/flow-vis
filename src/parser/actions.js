@@ -13,8 +13,8 @@ export default (parent)=>{
   function parseAction(name, ...data){
     var s = f.emit('get-model').data()
     if (actions[name]) {
-      //console.log(name, data)
       actions[name](s, ...data)
+      updateProps(s, ...data)
       throttledUpdate()
     }
     else {
@@ -28,72 +28,74 @@ export default (parent)=>{
     throttledUpdate.timer = setTimeout(()=>{
       delete throttledUpdate.timer;
       var s = f.emit('get-model').data()
-      //console.log('update', s)
       f.emit('update', s)
     }, 200)
   }
 }
 
-actions.listenerAdded = 
-  actions.listenerRemoved = (s, f, newData, oldData)=>{
-    var e = s.nodeMap[f.guid]
-    if (!e) return
-    e.source = f
-    updateHash(e)
+function updateProps(s, f, newData, oldData){
+  var e = s.nodeMap[f.guid]
+  //TODO merge in all props
+  if (e) for(let key in f){
+    e[key]= f[key]
   }
+}
+
+
+actions.listenerAdded
+ = actions.listenerChanged = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[f.guid]
+  if (!e) return
+  if (!e.listeners) e.listeners = {}
+  e.listeners[newData.name] = newData.handlers
+  updateHash(e)
+}
+actions.listenerRemoved = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[f.guid]
+  if (!e) return
+  delete e.listeners[newData.name]
+  updateHash(e)
+}
 
 actions.start = (s, f, newData, oldData)=>{
-  console.log('starting', s, f)
-  s.root = {
-      name: f.name,
-      guid: f.guid,
-      parent: null,
-      children: [],
-      numInstances:1,
-      source: f
-    }
+  let e = createNode(newData,s)
+  s.root.children.push(e)
   updateHash(s.root)
-  s.nodeMap[s.root.guid]= s.root
 }
 
 actions.create = (s, f, newData, oldData)=>{
-  if (!s.root) actions.start(s, f, newData, oldData)
+  if (!s.root.children.length) actions.start(s, f, s)
 
     var p = s.nodeMap[f.guid]
     if (!p) return;
     p.children = p.children || [];
     var existingNode = p.children.filter(c=>c.name==newData.name).pop()
-    var e = s.nodeMap[newData.guid] = {
-      name: newData.name,
-      guid: newData.guid,
-      children: [],
-      numInstances:1,
-      x0: p.x0,
-      y0: p.y0,
-      source: newData
-    }
-    updateHash(e)
+    var e = createNode(newData, s)
     // if (existingNode){
     //   removeNode(existingNode,s)
     //   s.nodeMap[newData.guid].numInstances+=existingNode.numInstances
     //   s.nodeMap[newData.guid].isNew= false
     // }
-    
     p.children.push(e)
   }
 
 actions.emit = (s, f, newData, oldData)=>{
-  var e = s.nodeMap[f.guid]
-  if (!e) return
-  e.source=f
+  var e = s.nodeMap[newData.guid]
+  if (!e) return;
   e.isEvent = true;
+  updateHash(e)
+}
+
+actions.emitted = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[newData.guid]
+  if (!e) return
+  e.recipients = newData.recipients
   updateHash(e)
 }
 
 actions.name = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
-  e.source=f
   e.name = f.name
   updateHash(e)
 }
@@ -102,30 +104,18 @@ actions.data = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
   e.data = newData
-  //updateHash(e)
-}
-actions.emitted = (s, f, newData, oldData)=>{
-  var e = s.nodeMap[f.guid]
-  if (!e) return
-  e.source=f
   updateHash(e)
 }
+
+
 
 actions.cancel = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
-  e.source=f
   updateHash(e)
 }
 
-actions.childRemoved = (s, f, oldParent)=>{
-  var e = s.nodeMap[f.guid]
-  if (!e) return
-  e.isRemoved = true
-  updateHash(e)
-}
-
-actions.childAdded = (s, f, newParent, oldParent)=>{
+actions.parent = actions.parented = (s, f, newParent, oldParent)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
   e.isRemoved = newParent==null
@@ -143,6 +133,20 @@ actions.childAdded = (s, f, newParent, oldParent)=>{
   }
 }
 
+function createNode(f,s){
+  var e = s.nodeMap[f.guid] = {
+      name: f.name,
+      guid: f.guid,
+      children: [],
+      numInstances:1,
+      parent:f.parent,
+      data:f.data,
+      status:f.status,
+      version:f.version
+    }
+  updateHash(e)
+  return e
+}
 
 function removeNode(d,s){
   d.childen && d.children.forEach(n=>removeNode(n,s))

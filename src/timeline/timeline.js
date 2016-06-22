@@ -11,7 +11,6 @@ export default (parent)=>(
         guid: -1,
         parent: null,
         children: [],
-        source: null,
         hidden:true
       },
       d3dom: null
@@ -78,7 +77,7 @@ function updateEventRoot(d){
         name: p.name,
         guid: p.guid+ '-'+d.eventRoot.children.length,
         children: [e],
-        source: p.source
+        //source: p.source
       }
   }
 

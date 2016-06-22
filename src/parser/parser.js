@@ -10,7 +10,8 @@ export default (parent)=>{
     .parent(parent)
     .call(Actions)
     .call(Model)
-    .on('track', track)
+    .on('track', track
+               , initLogger)
   
 
   /**
@@ -22,7 +23,6 @@ export default (parent)=>{
          , ERRORS.invalidTrackArgs)
     
     f.emit('action', 'start', utils.toObj(root), null, null)
-    initLogger()
   }
 
   /**
@@ -35,7 +35,7 @@ export default (parent)=>{
     nflow.logger((flow, name, newData, oldData)=>{
       
       // avoid circular tracking
-      if (flow.parents.has('nflow-vis')) return
+      if (flow.parents.has(f.parent())) return
       
       // only track subnodes of the root node
       if (!model.nodeMap[flow.guid()]) {

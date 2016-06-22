@@ -3,11 +3,10 @@ import utils from '../utils/utils'
 import nflow from 'nflow'
 
 export default (parent)=>(
-  nflow.create('nodes')
+  nflow.create('node')
     .parent(parent)
     .data({
       dom: null,
-      diagonal: d3.svg.diagonal()
     })    
     .on('dom'   , dom)
     .on('update', render)
@@ -18,18 +17,9 @@ function dom(dom){
 }
 
 
- function render(){
-  let flow = this.target
-  let tree = this.target.parent()
-  let d = this.target.data()
-  let td = tree.data()
-  let d3dom = td.d3nodes
-  let nodes = td.nodes.filter(e=>!e.hidden)
-  // Update the nodes
-  var node = d3dom.selectAll("g.node")
-    .data(nodes, function(d) {return d.f.guid })
-  
-  var nodeEnter = node.enter().append("g")
+{
+
+var nodeEnter = node.enter().append("g")
     .attr("class", "node")
     .style("opacity", 0)
     .attr("transform", function(d) {
@@ -119,4 +109,3 @@ function listeners(sel){
 
   e.exit().remove()
 }
-

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"> -->
   <link rel="stylesheet" href="/dist/nflow-vis.css">
   <!--[if IE]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -10,21 +11,21 @@
   <script src="/node_modules/nflow/dist/nflow.js"></script>
   <script src="/dist/nflow-vis.js"></script>
   <style type="text/css">
+  body, html{
+    height: 100%;
+    margin:0;
+  }
     figure{
-      height: 500px;
-      width: 800px;
-      display: inline-block;
-      margin:4px;
-      border: 1px dashed #334455;
+      height: 100%;
+      width: 100%;
+      margin:0;
     }
   </style>
 </head>
 
 <body id="home">
-
   
-  
-  <figure class='nflow-debug'>
+  <figure >
     <!-- <svg width=100% height=100% >
       <g width="800" height="300" class="tree"></g>
       class="example2"></g>
@@ -37,9 +38,9 @@
     var f = nflow.create('f').parent(null)
     
     // Vis
-    var vis = nflowVis.Debug()
-    vis.emit('dom', d3.select('.nflow-debug').node())
-    vis.emit('track', f)
+    // var vis = nflowVis.Debug()
+    // vis.emit('dom', d3.select('figure').node())
+    // vis.emit('track', f)
     
     // var tree =  nflowVis.Tree(vis)
     // tree.emit.downstream('dom', d3.select('.tree').node())
@@ -47,57 +48,78 @@
    
     // var timeline = nflowVis.Timeline(vis)   
     // timeline.emit.downstream('dom', d3.select('.timeline').node())
+
+    f.create('a')
+      .emit('event1')
+
+    // let ff = function handler(){}
+    // var a = f.create('a')
+    //   .on('foo', function listener1(){},function listener2(){}, ff)
+    //   .on('bar', function(){})
+    //   .on('dog', function(){})
+    //   .on('hello', function(){})
+
+    // a.name('new-a')
+
+    // a.create('hello-world.long name0')
+    // a.create('hello-world.long name0')
+    // a.create('hello-world.long name0')
+    // a.create('hello-world.long name0')
+    // a.create('hello-world.long name')
+    // a.create('verylongword.foo.anotherlogword.bar')
+
+    // f.create('beta').create('services')//.create('something-really-long')
+    // var c = f.create('c')
+
+    // c.create('x').emit('foo')
+    // var e = c.create('position-service')
+    //   .data(55)
+    //   .on('bar', function(){ })
     
+    // c.create('bar')
+    //   .data({
+    //     foo:'foo',
+    //     bar:99
+    //   })
+    // e.create('foxtrot')
+    // .parent(null)
+    //   .on('bar', function(){})
+    //   .create('upload-and-execute-request')
 
-
-    var a = f.create('a')
-      .on('foo', function(){})
-      .on('bar', function(){})
-      .on('dog', function(){})
-      .on('hello', function(){})
-
-    a.name('new-a')
-
-    a.create('hello-world.long name')
-    a.create('verylongword.foo.anotherlogword.bar')
-
-    f.create('beta').create('services')//.create('something-really-long')
-    var c = f.create('c')
-
-    c.create('x')
-    var e = c.create('position-service')
-      .on('bar', function(){ })
+    // var g = e.create('g')
     
-    c.create('bar')
-    e.create('foxtrot')
-    .parent(null)
-      .on('bar', function(){})
-      .create('upload-and-execute-request')
+    // f.create('d')
+    //   .on('hello', function(){})
+    //   .data({
+    //     foo:55,
+    //     bar:new Date(),
+    //     func:()=>{},
+    //     str:"Hello world",
+    //     o:{
+    //       a:1,
+    //       b:[2,3,4,5,6]
+    //     }
+    //   })
 
-    var g = e.create('g')
-    
-    f.create('d')
-      .on('hello', function(){})
+    // c.emit('hello').emit('bar').emit('dog')
+    // c.emit('hello').emit('bar')
+    // c.emit('hello').emit('bar')
+    // c.emit('hello').emit('bar')
+    // c.emit('hello').emit('bar')
+    //   .call(f=>{
+    //     //f.emit('cat')
+    //     f.emit('dog')
+    //       .emit('hey')
+    //   })
+    // c.emit('hello').cancel().emit('bar')
+    // c.emit('foo', 66)
+    // g.create('g0')
+    // g.cancel().emit('hello')
+    // g.emit.current('helllo')
 
-    c.emit('hello').emit('bar').emit('dog')
-    c.emit('hello').emit('bar')
-    c.emit('hello').emit('bar')
-    c.emit('hello').emit('bar')
-    c.emit('hello').emit('bar')
-      .call(f=>{
-        //f.emit('cat')
-        f.emit('dog')
-          .emit('hey')
-      })
-    c.emit('hello').emit('bar')
-    c.emit('foo')
-    g.emit('hello')
-    g.emit('helo')
-
-     g.cancel()
     // setInterval(function(){
     //   f.emit('bar')
-    // },4000)
+    // },1000)
 
     f.create('foo').create('bar')
     

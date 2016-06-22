@@ -1,0 +1,151 @@
+@import '~highlight.js/styles/github.css';
+
+.content .inspector-pane {
+    background-color: rgba(250,250,250,.9);
+    display: flex;
+    flex-direction: column;
+    color: rgb(48, 57, 66);
+    font-family: '.SFNSDisplay-Regular', 'Helvetica Neue', 'Lucida Grande', sans-serif;
+    font-size:12px;
+
+    >header {
+      display: flex;
+      flex: 0 0 20px;
+      border-bottom: 1px solid #ccc;
+      background-color: #f3f3f3;
+      line-height: 20px;
+      padding: 0 5px;
+
+    }
+
+    >section {
+      overflow: auto;
+      flex-basis: calc(100vh - 50px);
+      >article {
+        white-space: nowrap;
+
+      >pre {
+        padding: 0 5px;
+      }
+      >pre,
+      >div {
+        margin: 0;
+        
+
+        &:empty{
+            text-align: center;
+          &:after{
+            font-style: italic;
+            font-size: 90%;
+            padding: 6px;
+            color: #888;
+            pointer-events: none;
+          }
+        }
+      }
+
+        >input{
+          display: none;
+          &:checked+label{
+            &:before{
+              content: "\f0da";
+              margin-left: -8px;
+            }
+            +*{
+              display: none;
+            }
+
+          }
+
+          +label{
+            border-bottom: 1px solid #ccc;
+            overflow: visible;
+            background-color: #f3f3f3;
+            line-height: 20px;
+            padding: 0 15px;
+            display: block;
+
+
+            &:before{
+              font: normal normal normal 14px/1 FontAwesome;
+              font-size: inherit;
+              text-rendering: auto;
+              -webkit-font-smoothing: antialiased;
+              content: "\f0d7";
+              margin-left: -10px;
+              margin-top: 7px;
+              margin-right: 5px;
+            }
+
+            +*{
+              margin: 5px 10px;
+              display: block;
+            }
+
+          }
+        }
+
+        dl{
+          font-size: 11px !important;
+          font-family: Menlo, monospace;
+          margin:0;
+
+          dt{
+            color: rgb(200, 0, 0);
+            padding-left: 10px;
+            float: left;
+            clear: left;
+            &:after{
+              content:":";
+              color: black;
+              margin-right: 5px;
+            }
+          }
+          dd {
+            padding-left: 15px;
+            white-space: normal;
+            margin: 0;
+            div{
+              clear:left;
+            }
+
+            &.id{
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
+          }
+
+        }
+      }
+
+    }
+
+
+    // app specific selectors
+    
+
+
+    article {
+      .data:empty:after{
+        content: 'No Data';
+      }
+
+      .listeners:empty:after{
+        content: 'No Listeners';
+      }
+      
+      .recipients:empty:after{
+        content: 'No Recipients';
+      }
+
+      .child-nodes:empty:after{
+        content: 'No Child Nodes';
+      }
+
+    } 
+
+
+
+
+  }

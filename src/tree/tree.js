@@ -24,12 +24,13 @@ export default (parent)=>(
                 , render)
     .on('dom'   , dom
                 , init
-                , resize)
+                , resize
+                , move)
     .on('dragging', dragging)
     .on('show-events', showEvents)
-    .on('select-node', selectNode)
+    //.on('select-node', selectNode)
     .on('type', setType)
-    .on('resize', resize, redraw)
+    .on('resize', resize, redraw, move)
     .call(f=>setType.call(f))
 )
 
@@ -41,13 +42,13 @@ function showEvents(flag){
   this.target.data().showEvents = flag
 }
 
-function selectNode(node){
-  if (this.target.data().selectedNode == node) return
-  this.target.data().selectedNode = node
-  console.log('selectedNode', this.target.data().selectedNode)
-  var s = this.emit('get-model').data()
-  this.emit('update',s)
-}
+// function selectNode(node){
+//   if (this.target.data().selectedNode == node) return
+//   this.target.data().selectedNode = node
+//   console.log('selectedNode', this.target.data().selectedNode)
+//   var s = this.emit('get-model').data()
+//   this.emit('update',s)
+// }
 
 function redraw(){
   var s = this.emit('get-model').data()
@@ -55,7 +56,6 @@ function redraw(){
 }
 
 function update(d){
-  console.log('update')
   var flow = this.target
   var tree = flow.data().tree
   var fd = flow.data()
@@ -98,6 +98,8 @@ function update(d){
       if (nodes.length==1) {
         let node = nodes[0]
         node.displayName = node.f.name
+        node.f.name=='flow' && console.log(node.f)
+        if (node.f.version) node.displayName += `(${node.f.version})`
         node.recurring = false
       }
       nodes.reduce((a,b)=>{
@@ -167,12 +169,16 @@ function init(){
     .append('g')
     .classed('drag', true)
   
+
+
+  d.zoom = d3.behavior.zoom()
+    .scaleExtent([.1,2])
+    .scale(d.dragging=='horizontal'?.5:1)
+    .on("zoom", ()=>moveContents(d));
+
   d.dragging 
     && d.d3g
-   .call(d3.behavior.zoom()
-      .scaleExtent([.2, 1])
-      .on("zoom", zoom))
-    //.call(zoom)
+   .call(d.zoom)
 
   d.d3overlay = d.d3g.append("rect")
     .classed("overlay", true)
@@ -193,14 +199,47 @@ function init(){
   //   .get('links')
   //   .emit.downstream('dom', d.d3links.node())
 
-  function zoom() {
-    var t = d3.event.translate,
-        s = d3.event.scale;
-    if (d.dragging=='horizontal') t[1] = 0
-    //zoom.translate(t);
-    d.d3contents
-      .attr("transform", "translate(" + t + ")scale(" + s + ")");
+  
+}
+
+
+function move() {
+  let d = this.target.data()
+  moveContents(d)
+}
+
+function moveContents(d){
+  var t = d3.event? d3.event.translate: d.zoom.translate()
+  var s = d3.event? d3.event.scale: d.zoom.scale()
+  
+  //zoom.translate(t);
+  var maxBounds = d.d3overlay.node().getBBox()
+  var bounds = d.d3nodes.node().getBBox()
+  // var maxScale = .7 / Math.max(
+  //     bounds.width / d.width
+  //   , bounds.height / d.height)
+  // var minScale = .9 / Math.min(
+  //     bounds.width / d.width
+  //   , bounds.height / d.height)
+  // var offsetX = 0
+
+  if (d.dragging=='horizontal' && bounds.height) {
+    //let maxScale = .5*maxBounds.height/(s*bounds.height)
+    //console.log(s*bounds.height, bounds.height, d.height, maxBounds.height, maxScale)
+    //s = Math.max(s,maxScale)
+    t[1] = Math.max((1-s)*bounds.height, t[1])
+    t[1] = Math.min(0, t[1])
+
   }
+
+  d.zoom.translate(t);
+  d.zoom.scale(s);
+
+  d.d3contents
+    .attr("transform", "translate(" + t + ")scale(" + s + ")");
+}
+
+function fitContents(){
 
 }
 

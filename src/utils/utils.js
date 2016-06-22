@@ -2,32 +2,32 @@ var utils = {}
 
 utils.parentCancelled = node=>{
   if (!node) return false
-  return node.f.source.status =='CANCELLED' 
+  return node.f.status =='CANCELLED' 
     || utils.parentCancelled(node.parent)
 }
 
 utils.hasNoRecipients = node=>{
-  return node.f.source.recipients &&
-    node.f.source.recipients.length==0
+  return node.f.recipients &&
+    node.f.recipients.length==0
 }
 
 utils.isRecipient = (node,s)=>{
   if (!node 
     || !s.showRoute 
-    || !s.showRoute.f.source.recipients) 
+    || !s.showRoute.f.recipients) 
     return false
   
-  return s.showRoute.f.source.recipients
+  return s.showRoute.f.recipients
     .some(f=>f.flow.guid==node.f.guid)
 }
 
 utils.isEmitter = (node,s)=>{
   if (!node 
     || !s.showRoute 
-    || !s.showRoute.f.source.recipients) 
+    || !s.showRoute.f.recipients) 
     return false
   
-  return s.showRoute.f.source.parent.guid==node.f.guid
+  return s.showRoute.f.parent.guid==node.f.guid
 }
 
 /**
@@ -37,7 +37,7 @@ utils.isEmitter = (node,s)=>{
 utils.isEntryPoint = (node,s)=>{
   if (!node 
     || !s.showRoute 
-    || !s.showRoute.f.source.recipients) 
+    || !s.showRoute.f.recipients) 
     return false
 
   let entryPoint = s.showRoute

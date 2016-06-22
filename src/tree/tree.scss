@@ -2,6 +2,11 @@ body, html {
   height:100%;
 }
 
+.is-hidden{
+  display: none;
+  max-height: 0;
+}
+
 .nflow-vis-tree{
   
   
@@ -96,7 +101,8 @@ body, html {
   .is-cancelled .listener {
     fill: #F5C1C1;  
   }
-  .is-cancelled path {
+  .node.is-cancelled path,
+  .node.is-cancelled path.is-flow {
     stroke: #991515;
   }
 
