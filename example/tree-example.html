@@ -37,20 +37,22 @@
     
     var f = nflow.create('f').parent(null)
     
-    // Vis
+    
     var vis = nflowVis.Debug()
     vis.emit('dom', d3.select('figure').node())
     vis.emit('track', f)
     
-    // var tree =  nflowVis.Tree(vis)
+    //var tree =  nflowVis.Tree(null)
     // tree.emit.downstream('dom', d3.select('.tree').node())
     // tree.emit('show-events', false)
    
     // var timeline = nflowVis.Timeline(vis)   
     // timeline.emit.downstream('dom', d3.select('.timeline').node())
 
-    f.create('a')
-      .emit('event1')
+    // let a  = f.create('a')
+    // let b = f.create('b')
+    
+    // a.parent(b)
 
     let ff = function handler(){}
     var a = f.create('a')
@@ -67,6 +69,9 @@
     a.create('hello-world.long name0')
     a.create('hello-world.long name')
     a.create('verylongword.foo.anotherlogword.bar')
+
+
+    f.create('cc').parent(a).create('yy')
 
     f.create('beta').create('services')//.create('something-really-long')
     var c = f.create('c')

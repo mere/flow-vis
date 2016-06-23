@@ -44,7 +44,7 @@ export default (parent)=>{
       };
 
       f.emit('action', name, 
-        flow.toObj()
+        flow.toObj('name','guid')
         , utils.toObj(newData), utils.toObj(oldData))
     })
   }

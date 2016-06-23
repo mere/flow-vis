@@ -13,6 +13,7 @@ export default (parent)=>{
   function parseAction(name, ...data){
     var s = f.emit('get-model').data()
     if (actions[name]) {
+      console.log(name, data)
       actions[name](s, ...data)
       updateProps(s, ...data)
       throttledUpdate()
@@ -47,6 +48,8 @@ actions.listenerAdded
   var e = s.nodeMap[f.guid]
   if (!e) return
   if (!e.listeners) e.listeners = {}
+  //console.log(newData, newData.name)
+  if (typeof newData == 'string') newData = JSON.parse(newData)
   e.listeners[newData.name] = newData.handlers
   updateHash(e)
 }
@@ -60,6 +63,7 @@ actions.listenerRemoved = (s, f, newData, oldData)=>{
 actions.start = (s, f, newData, oldData)=>{
   let e = createNode(newData,s)
   s.root.children.push(e)
+  e.parent = s.root
   updateHash(s.root)
 }
 
@@ -71,6 +75,7 @@ actions.create = (s, f, newData, oldData)=>{
     p.children = p.children || [];
     var existingNode = p.children.filter(c=>c.name==newData.name).pop()
     var e = createNode(newData, s)
+    e.parent = p
     // if (existingNode){
     //   removeNode(existingNode,s)
     //   s.nodeMap[newData.guid].numInstances+=existingNode.numInstances
@@ -120,17 +125,23 @@ actions.parent = actions.parented = (s, f, newParent, oldParent)=>{
   if (!e) return
   e.isRemoved = newParent==null
   updateHash(e)
-  
   // remove child from old parent
-  var oldP = oldParent && s.nodeMap[oldParent.guid]
-  if (oldP && newParent) oldP.children = oldP.children.filter(n=>n.guid!=f.guid)
+  var oldP = e.parent
+  if (oldP && newParent) { // fix this, introduce ownership
+    console.log(oldP)
+    oldP.children = oldP.children.filter(n=>n.guid!=f.guid)
+    updateHash(oldP)
+  }
 
   // add to new parent
   var newP = newParent && s.nodeMap[newParent.guid]
   if (newP) {
     newP.children = newP.children || [];
     newP.children.push(e)
+    e.parent = newP
+    updateHash(newP)
   }
+  else e.parent = null
 }
 
 function createNode(f,s){
@@ -139,7 +150,6 @@ function createNode(f,s){
       guid: f.guid,
       children: [],
       numInstances:1,
-      parent:f.parent,
       data:f.data,
       status:f.status,
       version:f.version

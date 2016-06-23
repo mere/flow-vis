@@ -54,7 +54,8 @@ function update(s){
   d.d3dom.select('.status').text(e.f.status)
   
   //data
-  d.d3dom.select('.data').text(JSON.stringify(e.f.data,null, '  '))
+  let datum = e.f.data!=null?JSON.stringify(JSON.parse(e.f.data), null, '  '):''
+  d.d3dom.select('.data').text(datum)
     .each(function(){
       hl.highlightBlock(this);
     })
@@ -63,7 +64,7 @@ function update(s){
   let listeners = d.d3dom.select('.listeners')
       .selectAll('dl')
       .data(Object.keys(e.f.listeners||{}))
-
+  
   let dl = listeners.enter()
     .append('dl')
   dl.append('dt')

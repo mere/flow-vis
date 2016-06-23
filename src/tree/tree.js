@@ -98,7 +98,6 @@ function update(d){
       if (nodes.length==1) {
         let node = nodes[0]
         node.displayName = node.f.name
-        node.f.name=='flow' && console.log(node.f)
         if (node.f.version) node.displayName += `(${node.f.version})`
         node.recurring = false
       }
