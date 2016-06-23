@@ -85,7 +85,7 @@ function updateEventRoot(d){
 
 function updateBG(d){
   var maxDepth = getMaxDepth(d.eventRoot)
-  var depthArr = Array(maxDepth).fill()
+  var depthArr = [...Array(maxDepth)]
 
   var data = this.target.data()
   var sel = data.d3dom.select('.timeline-bg')

@@ -22,7 +22,7 @@ export default (parent)=>{
     utils.assert(!root.name.isFlow
          , ERRORS.invalidTrackArgs)
     
-    f.emit('action', 'start', utils.toObj(root), null, null)
+    f.emit('action', 'start', root.toObj(), root.toObj(), null)
   }
 
   /**
@@ -44,7 +44,7 @@ export default (parent)=>{
       };
 
       f.emit('action', name, 
-        utils.toObj(flow)
+        flow.toObj()
         , utils.toObj(newData), utils.toObj(oldData))
     })
   }

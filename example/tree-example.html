@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
   <link rel="stylesheet" href="/dist/nflow-vis.css">
   <!--[if IE]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -38,9 +38,9 @@
     var f = nflow.create('f').parent(null)
     
     // Vis
-    // var vis = nflowVis.Debug()
-    // vis.emit('dom', d3.select('figure').node())
-    // vis.emit('track', f)
+    var vis = nflowVis.Debug()
+    vis.emit('dom', d3.select('figure').node())
+    vis.emit('track', f)
     
     // var tree =  nflowVis.Tree(vis)
     // tree.emit.downstream('dom', d3.select('.tree').node())
@@ -52,70 +52,70 @@
     f.create('a')
       .emit('event1')
 
-    // let ff = function handler(){}
-    // var a = f.create('a')
-    //   .on('foo', function listener1(){},function listener2(){}, ff)
-    //   .on('bar', function(){})
-    //   .on('dog', function(){})
-    //   .on('hello', function(){})
+    let ff = function handler(){}
+    var a = f.create('a')
+      .on('foo', function listener1(){},function listener2(){}, ff)
+      .on('bar', function(){})
+      .on('dog', function(){})
+      .on('hello', function(){})
 
-    // a.name('new-a')
+    a.name('new-a')
 
-    // a.create('hello-world.long name0')
-    // a.create('hello-world.long name0')
-    // a.create('hello-world.long name0')
-    // a.create('hello-world.long name0')
-    // a.create('hello-world.long name')
-    // a.create('verylongword.foo.anotherlogword.bar')
+    a.create('hello-world.long name0')
+    a.create('hello-world.long name0')
+    a.create('hello-world.long name0')
+    a.create('hello-world.long name0')
+    a.create('hello-world.long name')
+    a.create('verylongword.foo.anotherlogword.bar')
 
-    // f.create('beta').create('services')//.create('something-really-long')
-    // var c = f.create('c')
+    f.create('beta').create('services')//.create('something-really-long')
+    var c = f.create('c')
 
-    // c.create('x').emit('foo')
-    // var e = c.create('position-service')
-    //   .data(55)
-    //   .on('bar', function(){ })
+    c.create('x').emit('foo')
+    var e = c.create('position-service')
+      .data(55)
+      .on('bar', function(){ })
     
-    // c.create('bar')
-    //   .data({
-    //     foo:'foo',
-    //     bar:99
-    //   })
-    // e.create('foxtrot')
-    // .parent(null)
-    //   .on('bar', function(){})
-    //   .create('upload-and-execute-request')
+    c.create('bar')
+      .data({
+        foo:'foo',
+        bar:99
+      })
+    e.create('foxtrot')
+    .parent(null)
+      .on('bar', function(){})
+      .create('upload-and-execute-request')
 
-    // var g = e.create('g')
+    var g = e.create('g')
     
-    // f.create('d')
-    //   .on('hello', function(){})
-    //   .data({
-    //     foo:55,
-    //     bar:new Date(),
-    //     func:()=>{},
-    //     str:"Hello world",
-    //     o:{
-    //       a:1,
-    //       b:[2,3,4,5,6]
-    //     }
-    //   })
+    f.create('d')
+      .on('hello', function(){})
+      .data({
+        foo:55,
+        bar:new Date(),
+        func:()=>{},
+        str:"Hello world",
+        o:{
+          a:1,
+          b:[2,3,4,5,6]
+        }
+      })
 
-    // c.emit('hello').emit('bar').emit('dog')
-    // c.emit('hello').emit('bar')
-    // c.emit('hello').emit('bar')
-    // c.emit('hello').emit('bar')
-    // c.emit('hello').emit('bar')
-    //   .call(f=>{
-    //     //f.emit('cat')
-    //     f.emit('dog')
-    //       .emit('hey')
-    //   })
-    // c.emit('hello').cancel().emit('bar')
-    // c.emit('foo', 66)
-    // g.create('g0')
-    // g.cancel().emit('hello')
-    // g.emit.current('helllo')
+    c.emit('hello').emit('bar').emit('dog')
+    c.emit('hello').emit('bar')
+    c.emit('hello').emit('bar')
+    c.emit('hello').emit('bar')
+    c.emit('hello').emit('bar')
+      .call(f=>{
+        //f.emit('cat')
+        f.emit('dog')
+          .emit('hey')
+      })
+    c.emit('hello').cancel().emit('bar')
+    c.emit('foo', 66)
+    g.create('g0')
+    g.cancel().emit('hello')
+    g.emit.current('helllo')
 
     // setInterval(function(){
     //   f.emit('bar')
