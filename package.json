@@ -1,6 +1,6 @@
 {
   "name": "nflow-vis",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "",
   "main": "dist/nflow-vis.js",
   "dependencies": {
@@ -18,7 +18,7 @@
     "css-loader": "^0.23.1",
     "d3": "^3.5.12",
     "extract-text-webpack-plugin": "^0.9.1",
-    "nflow": "^0.1.4",
+    "nflow": "^0.2.0",
     "node-sass": "^3.4.2",
     "raw-loader": "^0.5.1",
     "sass-loader": "^3.1.2",
@@ -27,9 +27,10 @@
     "webpack-dev-server": "^1.14.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server",
-    "dev": "webpack --watch",
+    "build": "webpack --watch",
+    "pretest": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 0",
     "prepublish-to-npm": "webpack",
     "publish-to-npm": "publish"
   },
