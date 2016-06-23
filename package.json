@@ -24,7 +24,9 @@
     "sass-loader": "^3.1.2",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.8",
-    "webpack-dev-server": "^1.14.0"
+    "webpack-dev-server": "^1.14.0",
+    "publish": "0.5.0",
+    "mocha-circleci-reporter": "^0.0.1"
   },
   "scripts": {
     "start": "webpack-dev-server",
