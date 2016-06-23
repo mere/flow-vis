@@ -1,8 +1,8 @@
-import nFlow from 'nFlow'
+import nflow from 'nflow'
 import Parser from '../parser/parser'
 
 export default (parent)=>(
-  nFlow.create('nflow-vis')
+  nflow.create('nflow-vis')
     .parent(parent)
     .call(Parser)
 )

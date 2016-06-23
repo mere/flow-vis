@@ -1,7 +1,8 @@
 import Tree from '../tree/tree'
+import nflow from 'nflow'
 
 export default (parent)=>(
-  nFlow.create('timeline')
+  nflow.create('timeline')
     .parent(parent)
     .call(Tree)
     .data({
@@ -10,12 +11,12 @@ export default (parent)=>(
         guid: -1,
         parent: null,
         children: [],
-        isNew: false,
-        source: null,
-        hidden: true
-      }
+        hidden:true
+      },
+      d3dom: null
     })
-    .on('update', update)
+    .on('update', updateEventRoot
+                , updateBG)
     .call(init)
     // .on('allow-dragging', allowDragging)
     // .on('show-events', showEvents)
@@ -25,38 +26,34 @@ export default (parent)=>(
 )
 
 function init(f){
+  var d = f.data()
   f.emit.downstream('dragging', 'horizontal')
   f.create('lines')
-    .on('dom'   , dom)
+    .on('dom'   , dom=>{d.d3dom = d3.select(dom)}
+                , dom
+      )
 
 }
 
 function dom(d){
   
   let d3dom = d3.select(d)
-
+    
   let drag = d3dom.select('.tree')
     .insert('g',":first-child")
-  let depth = [1,2,3,4,5,6,7,8] //todo use the calculated depth
-  depth.forEach(e=>{
-    drag.append('line')
-      .attr("x1", -10000)
-      .attr("y1", e*40)
-      .attr("x2", 10000)
-      .attr("y2", e*40);
-    
-  })
+    .classed('timeline-bg', true)
+
 
 }
 
-function update(d){
+function updateEventRoot(d){
   //console.log('timeline update')
   d.eventRoot = this.target.data().eventRoot
   d.eventRoot.source = d.root.source
   d.eventRoot.guid = d.root.guid
   d.eventRoot.children = []
   findEvents(d.root)
-
+  
   function findEvents(node){
     node.children.forEach(e=>{
       if (e.isEvent) {
@@ -72,20 +69,45 @@ function update(d){
     let lastEvent = d.eventRoot.children.length 
       && d.eventRoot.children[d.eventRoot.children.length-1]
     
-    if (lastEvent.source == p.source) {
-      lastEvent.children.push(e)
-      return null
-    }
+    // if (lastEvent.source == p.source) {
+    //   lastEvent.children.push(e)
+    //   return null
+    // }
     return {
         name: p.name,
         guid: p.guid+ '-'+d.eventRoot.children.length,
         children: [e],
-        isNew: false,
-        source: p.source,
-        hidden: false
+        //source: p.source
       }
   }
 
+}
+
+function updateBG(d){
+  var maxDepth = getMaxDepth(d.eventRoot)
+  var depthArr = Array(maxDepth).fill()
+
+  var data = this.target.data()
+  var sel = data.d3dom.select('.timeline-bg')
+    .selectAll('rect')
+    .data(depthArr)
+
+  sel.enter()
+    .append('rect')
+      .attr("x", -10000)
+      .attr("y", (d,i)=>40+i*40)
+      .attr("width", 20000)
+      .attr("height", 40)
+
+  sel.exit().remove()
+  
+}
+
+function getMaxDepth(node, i=0){
+  if (!node.children
+    || !node.children.length) return i
+  return Math.max(...node.children
+    .map(e=>getMaxDepth(e,i+1)))
 }
 
 

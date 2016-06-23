@@ -2,14 +2,16 @@ import utils from '../utils/utils'
 import {ERRORS} from '../utils/consts'
 import Actions from './actions'
 import Model from '../model/model'
+import nflow from 'nflow'
 
 export default (parent)=>{
 
-  var f = nFlow.create('parser')
+  var f = nflow.create('parser')
     .parent(parent)
     .call(Actions)
     .call(Model)
-    .on('track', track)
+    .on('track', track
+               , initLogger)
   
 
   /**
@@ -21,7 +23,6 @@ export default (parent)=>{
          , ERRORS.invalidTrackArgs)
     
     f.emit('action', 'start', utils.toObj(root), null, null)
-    initLogger()
   }
 
   /**
@@ -31,14 +32,14 @@ export default (parent)=>{
     if (initLogger.inited) return;
     var model = f.emit('get-model').data()
     initLogger.inited = true;
-    nFlow.logger((flow, name, newData, oldData)=>{
+    nflow.logger((flow, name, newData, oldData)=>{
       
       // avoid circular tracking
-      if (flow.parents.has('nflow-vis')) return
+      if (flow.parents.has(f.parent())) return
       
       // only track subnodes of the root node
       if (!model.nodeMap[flow.guid()]) {
-        console.warn('not tracking:', flow.name())
+        //console.warn('not tracking:', flow.name())
         return;
       };
 

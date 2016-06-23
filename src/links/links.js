@@ -2,7 +2,7 @@ import {RADIUS} from '../utils/paths'
 import utils from '../utils/utils'
 
 export default (parent)=>(
-  nFlow.create('links')
+  nflow.create('links')
     .parent(parent)
     .data({
       dom: null,
@@ -25,8 +25,8 @@ function dom(dom){
   let td = tree.data()
   let d3dom = td.d3links
   let links = td.links.filter(link=>(
-      !link.source.f.hidden 
-      && !link.target.f.hidden 
+      !link.source.hidden 
+      && !link.target.hidden 
     ))
   // Update the links
   var link = d3dom.selectAll("path.link")
@@ -36,19 +36,23 @@ function dom(dom){
     .attr("class", "link")
     .attr("d", function(d0) {
     var o = {
-        x: d0.source.x0||d0.source.x
-      , y: d0.source.y0||d0.source.y
+        x: d0.source.x
+      , y: d0.source.y
     };
     return d.diagonal({source: o, target: o});
     });
 
+  var changedLinks = link
+    .filter(d=>{
+      return d.source.needsUpdate || d.target.needsUpdate
+    })
   // Transition links to their new position.
-  link.transition()
+  changedLinks.transition()
     .duration(td.duration)
-    .delay(d=>d.target.f.isNew?td.delay:0)
+    .delay(d=>d.target.updateIndex*td.delay)
     .attr("d", getCoords.bind(flow));
 
-  link
+  changedLinks
     .classed('is-flow', d=>d.target.f.isEvent)
     .classed('is-removed', d=>d.target.f.isRemoved)
     .classed('is-cancelled', d=>utils.parentCancelled(d.target))
@@ -99,8 +103,8 @@ function updateRoutes(data){
       pairs = pairs
         .filter(pair=>(pair.source && pair.target))
         .filter(pair=>(
-          !pair.source.f.hidden 
-       && !pair.target.f.hidden))
+          !pair.source.hidden 
+       && !pair.target.hidden))
       return pairs
     })
 

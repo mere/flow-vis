@@ -1,12 +1,11 @@
 import Vis from './vis/vis'
 import Tree from './tree/tree'
 import Timeline from './timeline/timeline'
+import Debug from './debug/debug'
 
-
-import nFlow from 'nFlow'
-
-export var nFlowVis = {
+export var nflowVis = {
   Vis,
   Tree,
-  Timeline
+  Timeline,
+  Debug
 }
