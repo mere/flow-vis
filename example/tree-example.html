@@ -42,17 +42,14 @@
     vis.emit('dom', d3.select('figure').node())
     vis.emit('track', f)
     
-    //var tree =  nflowVis.Tree(null)
+    // var tree =  nflowVis.Tree(null)
     // tree.emit.downstream('dom', d3.select('.tree').node())
     // tree.emit('show-events', false)
    
     // var timeline = nflowVis.Timeline(vis)   
     // timeline.emit.downstream('dom', d3.select('.timeline').node())
 
-    // let a  = f.create('a')
-    // let b = f.create('b')
-    
-    // a.parent(b)
+   
 
     let ff = function handler(){}
     var a = f.create('a')
@@ -70,8 +67,9 @@
     a.create('hello-world.long name')
     a.create('verylongword.foo.anotherlogword.bar')
 
-
-    f.create('cc').parent(a).create('yy')
+    let yy = f.create('cc').parent(a).create('yy')
+    yy.create('foo')
+    yy.create('zz').parent(null)
 
     f.create('beta').create('services')//.create('something-really-long')
     var c = f.create('c')
@@ -122,11 +120,13 @@
     g.cancel().emit('hello')
     g.emit.current('helllo')
 
-    // setInterval(function(){
-    //   f.emit('bar')
-    // },1000)
+    setInterval(function(){
+      f.emit('bar')
+    },1000)
 
-    f.create('foo').create('bar')
+    let foo = f.create('foo').parent(null)
+    let x = f.create('x')
+    foo.parent(x).create('bar')
     
   }())</script>
 

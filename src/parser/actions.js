@@ -1,6 +1,6 @@
 import nflow from 'nflow'
 var actions  = {}
-
+let noop = ()=>{}
 export default (parent)=>{
   var f = nflow.create('actions')
     .parent(parent)
@@ -13,7 +13,6 @@ export default (parent)=>{
   function parseAction(name, ...data){
     var s = f.emit('get-model').data()
     if (actions[name]) {
-      console.log(name, data)
       actions[name](s, ...data)
       updateProps(s, ...data)
       throttledUpdate()
@@ -88,6 +87,7 @@ actions.emit = (s, f, newData, oldData)=>{
   var e = s.nodeMap[newData.guid]
   if (!e) return;
   e.isEvent = true;
+  e.isUnparented = true
   updateHash(e)
 }
 
@@ -120,28 +120,32 @@ actions.cancel = (s, f, newData, oldData)=>{
   updateHash(e)
 }
 
-actions.parent = actions.parented = (s, f, newParent, oldParent)=>{
+actions.parented =noop;
+
+actions.parent = (s, f, newParent, oldParent)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
-  e.isRemoved = newParent==null
   updateHash(e)
   // remove child from old parent
   var oldP = e.parent
-  if (oldP && newParent) { // fix this, introduce ownership
-    console.log(oldP)
-    oldP.children = oldP.children.filter(n=>n.guid!=f.guid)
+  var newP = newParent && s.nodeMap[newParent.guid]
+
+  if (oldP) {
+    // move ownership
+    if (newP) {
+      oldP.children = oldP.children.filter(n=>n.guid!=f.guid)
+    }
     updateHash(oldP)
   }
 
   // add to new parent
-  var newP = newParent && s.nodeMap[newParent.guid]
   if (newP) {
     newP.children = newP.children || [];
     newP.children.push(e)
     e.parent = newP
     updateHash(newP)
   }
-  else e.parent = null
+  e.isUnparented = !newP
 }
 
 function createNode(f,s){

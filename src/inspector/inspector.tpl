@@ -15,6 +15,10 @@
         <dd class='id'>{id}</dd>
         <dt>status</dt>
         <dd class='status'>{status}</dd>
+        <dt>version</dt>
+        <dd class='version'>unknown</dd>
+        <dt>parent</dt>
+        <dd class='parent'>unknown</dd>
       </dl>
     </article>
     <article>

@@ -90,6 +90,10 @@
           font-family: Menlo, monospace;
           margin:0;
 
+          &.is-unparented{
+            opacity:.4;
+          }
+
           dt{
             color: rgb(200, 0, 0);
             padding-left: 10px;
@@ -108,6 +112,8 @@
             div{
               clear:left;
             }
+
+
 
             &.id{
               white-space: nowrap;

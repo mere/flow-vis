@@ -54,7 +54,7 @@ function dom(dom){
 
   changedLinks
     .classed('is-flow', d=>d.target.f.isEvent)
-    .classed('is-removed', d=>d.target.f.isRemoved)
+    .classed('is-removed', d=>d.target.f.isUnparented)
     .classed('is-cancelled', d=>utils.parentCancelled(d.target))
   // Transition exiting nodes to the parent's new position.
   link.exit()

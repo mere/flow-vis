@@ -10,6 +10,7 @@ export default (parent)=>(
     .parent(parent)
     .data({
       d3dom:null,
+      selectedNode:null
     })
     //.call(Nodes)
     .on('dom', dom)
@@ -52,7 +53,9 @@ function update(s){
   d.d3dom.select('.name').text(e.f.name)
   d.d3dom.select('.id').text(e.f.guid)
   d.d3dom.select('.status').text(e.f.status)
-  
+  d.d3dom.select('.version').text(e.f.version)
+  d.d3dom.select('.parent').text((!e.f.isUnparented && e.f.parent && e.f.parent.name!=null)?e.f.parent.name: 'DETACHED')
+    
   //data
   let datum = e.f.data!=null?JSON.stringify(JSON.parse(e.f.data), null, '  '):''
   d.d3dom.select('.data').text(datum)
@@ -64,7 +67,7 @@ function update(s){
   let listeners = d.d3dom.select('.listeners')
       .selectAll('dl')
       .data(Object.keys(e.f.listeners||{}))
-  
+
   let dl = listeners.enter()
     .append('dl')
   dl.append('dt')
@@ -76,7 +79,6 @@ function update(s){
   listeners.select('dd').text(d=>e.f.listeners[d].join(', '))
 
 
-  console.log(e.f)  
   
   // recipents
   var recipients = d.d3dom.select('.recipients')
@@ -118,6 +120,7 @@ function update(s){
 
   childNodes.select('dt').text(d=>d.name)
   childNodes.select('dd').text(d=>d.status)
+  childNodes.classed('is-unparented',d=>d.isUnparented)
 
 
 }

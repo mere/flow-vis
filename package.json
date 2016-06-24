@@ -1,12 +1,12 @@
 {
   "name": "nflow-vis",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "d3 visualisation for nflow",
   "main": "dist/nflow-vis.js",
   "dependencies": {
   },
   "devDependencies": {
-    "nflow": "^0.2.2",
+    "nflow": "^0.2.3",
     "highlight.js": "^9.3.0",
     "split.js": "^1.0.6",
     "webpack": "^1.12.8",

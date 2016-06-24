@@ -12,7 +12,8 @@ export default (parent)=>(
         children: [],
         numInstances:1,
         hidden:true,
-        listeners:[]
+        listeners:[],
+        isRoot:true
       },
       nodeMap: {}
     })

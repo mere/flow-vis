@@ -98,7 +98,6 @@ function update(d){
       if (nodes.length==1) {
         let node = nodes[0]
         node.displayName = node.f.name
-        if (node.f.version) node.displayName += `(${node.f.version})`
         node.recurring = false
       }
       nodes.reduce((a,b)=>{
