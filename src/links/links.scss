@@ -1,0 +1,55 @@
+
+.link {
+  fill: none;
+  stroke: #aaaaaa;
+  stroke-width: 2px;
+  transition: stroke-dashoffset 1s ease-in-out;
+
+}
+
+.routes {
+
+  .link{
+    fill: none;
+    stroke-linecap: round;
+    stroke: #1f8dd6;
+    stroke-width: 5px;
+    stroke-dasharray: 1 10;
+    stroke-dashoffset: 0;
+    display: none;
+  }
+
+  &[data-direction="2"] .link-down,
+  &[data-direction="3"] .link-down{
+    display: block;
+    animation: dash-downstream .5s linear infinite;
+  }
+  
+  &[data-direction="1"] .link-up,
+  &[data-direction="3"] .link-up{
+    display: block;
+    animation: dash-upstream .5s linear infinite;
+  }
+}
+
+
+
+@keyframes dash-upstream{
+  to{
+    stroke-dashoffset: 10;
+  }
+}
+
+@keyframes dash-downstream{
+  to{
+    stroke-dashoffset: -10;
+  }
+}
+
+.link.is-flow{
+  stroke-dasharray: 5,5;
+}
+
+.link:not(.is-flow).is-removed{
+  stroke: rgba(255,0,0,.05);
+}

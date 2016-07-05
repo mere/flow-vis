@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css"> -->
   <link rel="stylesheet" href="/dist/nflow-vis.css">
   <!--[if IE]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -37,23 +37,15 @@
     
     var f = nflow.create('f').parent(null)
     
+    var tree =  nflowVis.Vis(null)
+      .call(nflowVis.Tree)
+    tree.emit('track', f)
+    tree.emit('dom', d3.select('figure').node())
+    tree.emit('show-events', true)
     
-    var vis = nflowVis.Debug()
-    vis.emit('dom', d3.select('figure').node())
-    vis.emit('track', f)
-    
-    // var tree =  nflowVis.Tree(null)
-    // tree.emit.downstream('dom', d3.select('.tree').node())
-    // tree.emit('show-events', false)
-   
-    // var timeline = nflowVis.Timeline(vis)   
-    // timeline.emit.downstream('dom', d3.select('.timeline').node())
-
-   
-
-    let ff = function handler(){}
+    let noop = function handler(){}
     var a = f.create('a')
-      .on('foo', function listener1(){},function listener2(){}, ff)
+      .on('foo', function listener1(){},function listener2(){}, noop)
       .on('bar', function(){})
       .on('dog', function(){})
       .on('hello', function(){})
@@ -68,66 +60,17 @@
     a.create('verylongword.foo.anotherlogword.bar')
 
     let yy = f.create('cc').parent(a).create('yy')
-    yy.create('foo')
-    yy.create('zz').parent(null)
+    yy.create('foo').on('foo', noop)
+    yy.create('zz').parent(null).on('foo', noop)
 
-    f.create('beta').create('services')//.create('something-really-long')
+    let beta = f.create('beta')
+    beta.create('test').on('foo', noop).emit.current('foo')
+    beta.create('services')//.create('something-really-long')
+      .emit('foo')
     var c = f.create('c')
 
-    c.create('x').emit('foo')
-    var e = c.create('position-service')
-      .data(55)
-      .on('bar', function(){ })
-    
-    c.create('bar')
-      .data({
-        foo:'foo',
-        bar:99
-      })
-    e.create('foxtrot')
-    .parent(null)
-      .on('bar', function(){})
-      .create('upload-and-execute-request')
+    f.emit.downstream('foo')
 
-    var g = e.create('g')
-    
-    f.create('d')
-      .on('hello', function(){})
-      .data({
-        foo:55,
-        bar:new Date(),
-        func:()=>{},
-        str:"Hello world",
-        o:{
-          a:1,
-          b:[2,3,4,5,6]
-        }
-      })
-
-    c.emit('hello').emit('bar').emit('dog')
-    c.emit('hello').emit('bar')
-    c.emit('hello').emit('bar')
-    c.emit('hello').emit('bar')
-    c.emit('hello').emit('bar')
-      .call(f=>{
-        //f.emit('cat')
-        f.emit('dog')
-          .emit('hey')
-      })
-    c.emit('hello').cancel().emit('bar')
-    c.emit('foo', 66)
-    g.create('g0')
-    g.cancel().emit('hello')
-    g.emit.current('helllo')
-
-    setInterval(function(){
-      f.emit('bar')
-    },1000)
-
-    let foo = f.create('foo').parent(null)
-    let x = f.create('x')
-    foo.parent(x).create('bar')
-    
   }())</script>
 
 </body>

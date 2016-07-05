@@ -1,5 +1,8 @@
 body, html {
   height:100%;
+  font-family: '.SFNSDisplay-Regular', 'Helvetica Neue', 'Lucida Grande', sans-serif;
+  font-size:12px;
+
 }
 
 .is-hidden{
@@ -29,54 +32,15 @@ body, html {
       path.is-flow {
         fill: #C1E0F5;
         stroke: #1f8dd6;
-        stroke-width: 2px;
       }
       
       &.is-parent-cancelled path.is-flow {
         stroke: #F68E8E;
       }
 
-      text {
-        font-size: 1.1rem;
-        fill: #606c71;
-        font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-        transform-origin: 0 0;
-        alignment-baseline: hanging;
-      }
     }
 
-    .link {
-      fill: none;
-      stroke: #606c71;
-      stroke-width: 2px;
-      transition: stroke-dashoffset 1s ease-in-out;
-       
-    }
-
-    .route .link {
-      fill: none;
-      stroke-linecap: round;
-      stroke: #1f8dd6;
-      stroke-width: 5px;
-      animation: dash .5s linear infinite;
-      stroke-dasharray: 1 10;
-      stroke-dashoffset: 0;
-    }
-
-    @keyframes dash{
-      to{
-        stroke-dashoffset: 10;
-      }
-    }
-
-    .link.is-flow{
-      stroke-dasharray: 5,5;
-    }
-
-    .link.is-removed{
-      stroke: rgba(255,0,0,.05);
-    }
-
+    
   .listener {
     fill: #C1E0F5;
     stroke: none;

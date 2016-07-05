@@ -2,6 +2,7 @@ import './tree.scss'
 import nflow from 'nflow'
 import Nodes from '../nodes/nodes'
 import Links from '../links/links'
+import utils from '../utils/utils'
 
 export default (parent)=>(
   nflow.create('tree')
@@ -18,6 +19,7 @@ export default (parent)=>(
       nodes:null,
       links:null,
       maxBatchLength: 7,
+      nodesize:{ width:100, height:80},
       clonedNodes : {}
     })
     .on('update', update
@@ -79,7 +81,7 @@ function update(d){
       fd.nodesByDepth[d.depth].push(d)
       fd.nodeMap[d.f.guid]= d
       //d.y0 =d.y = d.depth*50+Math.random()*50
-      d.y = d.depth * (root.hidden?40:50)+ (root.hidden?0:50);
+      //d.y = d.depth * (root.hidden?40:fd.nodesize.height)+ (root.hidden?0:fd.nodesize.height);
       d.x+=fd.width/2
       
       d.hidden = d.f.hidden
@@ -133,9 +135,9 @@ function setType(type='tree'){
       //console.log('sep', a.f.name, b.f.name, a.depth, b)
          return (a.f.name == b.f.name)
           ? .05
-          : 1//b.f.name.length*.1
+          : ((a.f.children.length | b.f.children.length)?1:.8 )
       })
-    .nodeSize([100,50])
+    .nodeSize([d.nodesize.width,d.nodesize.height])
     .children((e)=>(
       d.showEvents
         ? e.f.children
@@ -147,6 +149,10 @@ function setType(type='tree'){
 
 
 }
+
+
+
+
 
 function cloneNode(e,d){
   if (!d.clonedNodes[e.guid])

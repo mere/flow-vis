@@ -67,9 +67,10 @@ utils.fitText = function(maxWidth){
     var d3text = d3.select(this)
     var bb = d3text.node().getBBox();
     var r = maxWidth / bb.width;
+    var fontSize = parseFloat(d3text.style("font-size"))
     r = Math.min(r,1)
     d3text
-      .style('transform', `scale(${r})`)
+      .style('font-size', (r*fontSize)+'px')
     
   }
 }
@@ -110,6 +111,19 @@ utils.wrapText = function(maxWidth) {
       }
     }
   }
+}
+
+
+utils.updateHash = (d)=>{
+  d.hash = createGuid()
+}
+
+function createGuid(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+    .replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+    });
 }
 
 export default utils

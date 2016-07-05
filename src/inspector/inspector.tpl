@@ -44,7 +44,7 @@
     <article>
       <input  id='history-pane' type="checkbox" />
       <label for='history-pane'>History</label>
-      <div></div>
+      <div class="history"></div>
     </article>
   </section>
 

@@ -1,4 +1,6 @@
 import nflow from 'nflow'
+import utils from '../utils/utils'
+
 var actions  = {}
 let noop = ()=>{}
 export default (parent)=>{
@@ -14,7 +16,7 @@ export default (parent)=>{
     var s = f.emit('get-model').data()
     if (actions[name]) {
       actions[name](s, ...data)
-      updateProps(s, ...data)
+      updateProps(s, name, ...data)
       throttledUpdate()
     }
     else {
@@ -33,12 +35,13 @@ export default (parent)=>{
   }
 }
 
-function updateProps(s, f, newData, oldData){
+function updateProps(s, name, f, newData, oldData){
   var e = s.nodeMap[f.guid]
   //TODO merge in all props
   if (e) for(let key in f){
     e[key]= f[key]
   }
+  e.history.push({f, d:newData, d0:oldData})
 }
 
 
@@ -50,20 +53,20 @@ actions.listenerAdded
   //console.log(newData, newData.name)
   if (typeof newData == 'string') newData = JSON.parse(newData)
   e.listeners[newData.name] = newData.handlers
-  updateHash(e)
+  utils.updateHash(e)
 }
 actions.listenerRemoved = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
   delete e.listeners[newData.name]
-  updateHash(e)
+  utils.updateHash(e)
 }
 
 actions.start = (s, f, newData, oldData)=>{
   let e = createNode(newData,s)
   s.root.children.push(e)
   e.parent = s.root
-  updateHash(s.root)
+  utils.updateHash(s.root)
 }
 
 actions.create = (s, f, newData, oldData)=>{
@@ -88,28 +91,28 @@ actions.emit = (s, f, newData, oldData)=>{
   if (!e) return;
   e.isEvent = true;
   e.isUnparented = true
-  updateHash(e)
+  utils.updateHash(e)
 }
 
 actions.emitted = (s, f, newData, oldData)=>{
   var e = s.nodeMap[newData.guid]
   if (!e) return
   e.recipients = newData.recipients
-  updateHash(e)
+  utils.updateHash(e)
 }
 
 actions.name = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
   e.name = f.name
-  updateHash(e)
+  utils.updateHash(e)
 }
 
 actions.data = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
   e.data = newData
-  updateHash(e)
+  utils.updateHash(e)
 }
 
 
@@ -117,7 +120,7 @@ actions.data = (s, f, newData, oldData)=>{
 actions.cancel = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
-  updateHash(e)
+  utils.updateHash(e)
 }
 
 actions.parented =noop;
@@ -125,7 +128,7 @@ actions.parented =noop;
 actions.parent = (s, f, newParent, oldParent)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
-  updateHash(e)
+  utils.updateHash(e)
   // remove child from old parent
   var oldP = e.parent
   var newP = newParent && s.nodeMap[newParent.guid]
@@ -135,7 +138,7 @@ actions.parent = (s, f, newParent, oldParent)=>{
     if (newP) {
       oldP.children = oldP.children.filter(n=>n.guid!=f.guid)
     }
-    updateHash(oldP)
+    utils.updateHash(oldP)
   }
 
   // add to new parent
@@ -143,7 +146,7 @@ actions.parent = (s, f, newParent, oldParent)=>{
     newP.children = newP.children || [];
     newP.children.push(e)
     e.parent = newP
-    updateHash(newP)
+    utils.updateHash(newP)
   }
   e.isUnparented = !newP
 }
@@ -156,9 +159,10 @@ function createNode(f,s){
       numInstances:1,
       data:f.data,
       status:f.status,
-      version:f.version
+      version:f.version,
+      history:[]
     }
-  updateHash(e)
+  utils.updateHash(e)
   return e
 }
 
@@ -167,16 +171,4 @@ function removeNode(d,s){
   if (d.parent) d.parent.children = d.parent.children.filter(n=>n.guid!=d.guid)
   delete s.nodeMap[d.guid]
   
-}
-
-function updateHash(d){
-  d.hash = createGuid()
-}
-
-function createGuid(){
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
-    .replace(/[xy]/g, function(c) {
-      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-      return v.toString(16);
-    });
 }
