@@ -50,14 +50,16 @@ function update(s){
 
   if (!e) return;
 
-  d.d3dom.select('.name').text(e.f.name)
-  d.d3dom.select('.id').text(e.f.guid)
-  d.d3dom.select('.status').text(e.f.status)
-  d.d3dom.select('.version').text(e.f.version)
-  d.d3dom.select('.parent').text((!e.f.isUnparented && e.f.parent && e.f.parent.name!=null)?e.f.parent.name: 'DETACHED')
+  d.d3dom.select('.name').text(e.name)
+  d.d3dom.select('.id').text(e.guid)
+  d.d3dom.select('.status').text(e.status)
+  d.d3dom.select('.version').text(e.version)
+  d.d3dom.select('.parent').text((!e.isUnparented && e.parent && e.parent.name!=null)?e.parent.name: 'DETACHED')
     
   //data
-  let datum = e.f.data!=null?JSON.stringify(JSON.parse(e.f.data), null, '  '):''
+  let payload = e.data
+  if (typeof(e.data)=='string') payload = JSON.parse(e.data)
+  let datum = e.data!=null?JSON.stringify(payload, null, '  '):''
   d.d3dom.select('.data').text(datum)
     .each(function(){
       hl.highlightBlock(this);
@@ -66,7 +68,7 @@ function update(s){
   //listeners
   let listeners = d.d3dom.select('.listeners')
       .selectAll('dl')
-      .data(Object.keys(e.f.listeners||{}))
+      .data(Object.keys(e.listeners||{}))
 
   let dl = listeners.enter()
     .append('dl')
@@ -76,14 +78,14 @@ function update(s){
   listeners.exit().remove()
 
   listeners.select('dt').text(String)
-  listeners.select('dd').text(d=>e.f.listeners[d].join(', '))
+  listeners.select('dd').text(d=>e.listeners[d].join(', '))
 
 
   
   // recipents
   var recipients = d.d3dom.select('.recipients')
     .selectAll('dl')
-    .data(e.f.recipients||[])
+    .data(e.recipients||[])
   let rdl = recipients.enter()
     .append('dl')
   
@@ -109,7 +111,7 @@ function update(s){
   // child nodes
   var childNodes = d.d3dom.select('.child-nodes')
     .selectAll('dl')
-    .data(e.f.children||[])
+    .data(e.children||[])
   let cdl = childNodes.enter()
     .append('dl')
   
@@ -121,6 +123,22 @@ function update(s){
   childNodes.select('dt').text(d=>d.name)
   childNodes.select('dd').text(d=>d.status)
   childNodes.classed('is-unparented',d=>d.isUnparented)
+
+  // history
+  var history = d.d3dom.select('.history')
+    .selectAll('dl')
+    .data(e.history||[])
+  let hdl = history.enter()
+    .append('dl')
+  
+  hdl.append('dt')
+  hdl.append('dd')
+
+  history.exit().remove()
+
+  history.select('dt').text(d=>d.name)
+  history.select('dd').text(d=>d.status)
+  history.classed('is-unparented',d=>d.isUnparented)
 
 
 }

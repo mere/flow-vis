@@ -1,7 +1,7 @@
 import {RADIUS, CIRCLE, DROP} from '../utils/paths'
 import utils from '../utils/utils'
 import nflow from 'nflow'
-
+import './nodes.scss'
 export default (parent)=>(
   nflow.create('nodes')
     .parent(parent)
@@ -15,6 +15,7 @@ export default (parent)=>(
 
 function dom(dom){
   this.target.data().dom = dom
+
 }
 
 
@@ -34,8 +35,10 @@ function dom(dom){
     .style("opacity", 0)
     .attr("transform", function(d) {
       return "translate(" + d.x0 + "," + d.y0 + ")"; })
-    .on("click", d=>flow.emit('select-node', d))
+    .on("click", d=>flow.emit('select-node', d.f))
     
+  nodeEnter.append('rect')
+    .classed('text-bg', true)
 
   nodeEnter.append('path')
     .attr("transform", "scale(.8)")
@@ -45,17 +48,24 @@ function dom(dom){
     .classed('listeners', true)
 
   nodeEnter
-    .append('g')
-    .attr("transform", `translate(${RADIUS+4},0)`)
+    //.append('g')
+    //.attr("transform", `translate(${RADIUS+4},0)`)
     .append("text")
+    .classed('node-label', true)
     .attr("x", 0)
-    .attr("dy", ".35em")
+    .attr("y", -(RADIUS+5)+'px')
+    .attr("text-anchor", 'middle')
+    //.attr("dy", ".35em")
     .style("fill-opacity", .1);
 
   var changedNodes = node
     .filter(d=>{
       return d.needsUpdate
     })
+
+  
+
+
   
   //console.log('changedNodes', changedNodes.size())
   var nodeUpdate = changedNodes
@@ -69,8 +79,21 @@ function dom(dom){
         .select("text")
         .text(d=>d.displayName)
         .style("fill-opacity", 1)
-        .each(utils.wrapText(120))
+        //.each(utils.wrapText(100))
         .each(utils.fitText(70))
+
+      d3.select(this)
+        .select('.text-bg')
+        .each(function(){
+          var text = d3.select(this.parentNode).select('text');
+          var bbox = text.node().getBBox();
+          var padding = {x:2,y:0};
+          var rect = d3.select(this)
+              .attr("x", bbox.x - padding.x)
+              .attr("y", bbox.y - padding.y)
+              .attr("width", bbox.width + (padding.x*2))
+              .attr("height", bbox.height + (padding.y*2))
+        })
     });
   
   changedNodes
@@ -80,9 +103,9 @@ function dom(dom){
   changedNodes
     .classed('is-cancelled', d=>d.f.status=='CANCELLED')
     .classed('is-parent-cancelled', d=>utils.parentCancelled(d))
-    .classed('is-recipient', d=>utils.isRecipient(d,td))
+    .classed('is-recipient', d=>d.f.recipientInfo)
     .classed('has-no-recipients', d=>utils.hasNoRecipients(d))
-    .classed('is-emitter', d=>utils.isEntryPoint(d,td))
+    .classed('is-emitter', d=>d.f.isEmitter)
     .call(listeners)
   
   nodeUpdate

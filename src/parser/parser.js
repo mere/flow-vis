@@ -1,6 +1,7 @@
 import utils from '../utils/utils'
 import {ERRORS} from '../utils/consts'
 import Actions from './actions'
+import Selection from './selection'
 import Model from '../model/model'
 import nflow from 'nflow'
 
@@ -8,8 +9,9 @@ export default (parent)=>{
 
   var f = nflow.create('parser')
     .parent(parent)
-    .call(Actions)
     .call(Model)
+    .call(Actions)
+    .call(Selection)
     .on('track', track
                , initLogger)
   
@@ -22,7 +24,7 @@ export default (parent)=>{
     utils.assert(!root.name.isFlow
          , ERRORS.invalidTrackArgs)
     
-    f.emit('action', 'start', root.toObj(), root.toObj(), null)
+    f.emit('action', 'start', root.toObj('name', 'guid'), root.toObj('name', 'guid'), null)
   }
 
   /**
