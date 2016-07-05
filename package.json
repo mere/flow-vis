@@ -1,6 +1,6 @@
 {
   "name": "nflow-vis",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "d3 visualisation for nflow",
   "main": "dist/nflow-vis.js",
   "dependencies": {
