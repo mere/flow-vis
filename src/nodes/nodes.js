@@ -25,6 +25,9 @@ function dom(dom){
   let d = this.target.data()
   let td = tree.data()
   let d3dom = td.d3nodes
+  
+  if (!td.nodes) return;
+  
   let nodes = td.nodes.filter(e=>!e.hidden)
   // Update the nodes
   var node = d3dom.selectAll("g.node")
