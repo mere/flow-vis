@@ -77,24 +77,24 @@ function update(d){
     fd.nodeMap = {}
     fd.nodes.forEach(function(d) {
       if (!fd.nodesByDepth[d.depth]) fd.nodesByDepth[d.depth] = []
-      
+
       fd.nodesByDepth[d.depth].push(d)
       fd.nodeMap[d.f.guid]= d
-      //d.y0 =d.y = d.depth*50+Math.random()*50
       //d.y = d.depth * (root.hidden?40:fd.nodesize.height)+ (root.hidden?0:fd.nodesize.height);
       d.x+=fd.width/2
-      
+      d.y-=fd.nodesize.height>>1
+
       d.hidden = d.f.hidden
-      d.needsUpdate = d.f.hash!=d.f.hash0 
-        || d.x!=d.x0 
+      d.needsUpdate = d.f.hash!=d.f.hash0
+        || d.x!=d.x0
         || d.y!=d.y0
 
       if (d.needsUpdate) d.updateIndex = i++
       d.f.hash0 = d.f.hash
-      
+
       d.x0 = (d.x0!=null)?d.x:(d.parent&&!d.parent.hidden?d.parent.x:d.x)
       d.y0 = (d.y0!=null)?d.y:(d.parent&&!d.parent.hidden?d.parent.y:d.y)
-      
+
     });
     fd.nodesByDepth.forEach((nodes,i)=>{
       if (nodes.length==1) {
@@ -129,7 +129,7 @@ function setType(type='tree'){
   }
   if (type=='cluster'){
     d.tree = d3.layout.cluster()
-  } 
+  }
   d.tree
     .separation((a,b)=>{
       //console.log('sep', a.f.name, b.f.name, a.depth, b)
@@ -172,7 +172,7 @@ function init(){
     .classed('nflow-vis-tree', true)
     .append('g')
     .classed('drag', true)
-  
+
 
 
   d.zoom = d3.behavior.zoom()
@@ -180,7 +180,7 @@ function init(){
     .scale(d.dragging=='horizontal'?.5:1)
     .on("zoom", ()=>moveContents(d));
 
-  d.dragging 
+  d.dragging
     && d.d3g
    .call(d.zoom)
 
@@ -198,12 +198,12 @@ function init(){
   d.d3nodes = d.d3contents.append('g')
     .classed('nodes', true)
 
-  
+
   // this.target
   //   .get('links')
   //   .emit.downstream('dom', d.d3links.node())
 
-  
+
 }
 
 
@@ -213,9 +213,10 @@ function move() {
 }
 
 function moveContents(d){
+  if (!d.dragging) return
   var t = d3.event? d3.event.translate: d.zoom.translate()
   var s = d3.event? d3.event.scale: d.zoom.scale()
-  
+
   //zoom.translate(t);
   var maxBounds = d.d3overlay.node().getBBox()
   var bounds = d.d3nodes.node().getBBox()
@@ -258,10 +259,10 @@ function render(){
 function resize(){
   let d = this.target.data()
   let d3dom = d3.select(d.dom)
-  d.width = d.isSVG 
+  d.width = d.isSVG
     ? parseInt(d3dom.attr('width'))
     : parseInt(d3dom.style('width'))
-  d.height = d.isSVG 
+  d.height = d.isSVG
     ? parseInt(d3dom.attr('height'))
     : parseInt(d3dom.style('height'))
 
@@ -273,6 +274,3 @@ function resize(){
     .attr("width", d.width)
     .attr("height", d.height);
 }
-
-
-

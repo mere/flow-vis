@@ -46,32 +46,9 @@
 
     let noop = function handler(){}
     var a = f.create('a')
-      .on('foo', function listener1(){},function listener2(){}, noop)
-      .on('bar', function(){})
-      .on('dog', function(){})
-      .on('hello', function(){})
+    a.cancel()
 
-    a.name('new-a')
-
-    a.create('hello-world.long name0')
-    a.create('hello-world.long name0')
-    a.create('hello-world.long name0')
-    a.create('hello-world.long name0')
-    a.create('hello-world.long name')
-    a.create('verylongword.foo.anotherlogword.bar')
-
-    let yy = f.create('cc').parent(a).cancel().create('yy')
-    yy.create('foo').on('foo', noop)
-    yy.create('zz').parent(null).on('foo', noop)
-
-    let beta = f.create('beta')
-    beta.create('test').on('foo', noop).emit.current('foo')
-    beta.create('services')//.create('something-really-long')
-      .emit('foo')
-    var c = f.create('c')
-
-    f.emit.downstream('foo')
-
+    nflow.create('x').parent(a)
   }())</script>
 
 </body>

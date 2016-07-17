@@ -7,14 +7,15 @@ export default (parent)=>{
   var f = nflow.create('actions')
     .parent(parent)
     .on('action', parseAction)
-  
+
   /**
    *  Parses a new action(eg. flow emitted action),
-   *  and stores the new tree state in the model 
+   *  and stores the new tree state in the model
    */
   function parseAction(name, ...data){
     var s = f.emit('get-model').data()
     if (actions[name]) {
+      createParent(s, name, ...data)
       actions[name](s, ...data)
       updateProps(s, name, ...data)
       throttledUpdate()
@@ -32,6 +33,14 @@ export default (parent)=>{
       var s = f.emit('get-model').data()
       f.emit('update', s)
     }, 200)
+  }
+}
+
+function createParent(s, name, f, newData, oldData){
+  var e = s.nodeMap[f.guid]
+  if (!e){
+    let e = createNode(f,s)
+    utils.updateHash(s.root)
   }
 }
 
@@ -119,7 +128,7 @@ actions.data = (s, f, newData, oldData)=>{
 
 actions.cancel = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
-  if (!e) return
+  e.status = 'CANCELLED'
   utils.updateHash(e)
 }
 
@@ -170,5 +179,5 @@ function removeNode(d,s){
   d.childen && d.children.forEach(n=>removeNode(n,s))
   if (d.parent) d.parent.children = d.parent.children.filter(n=>n.guid!=d.guid)
   delete s.nodeMap[d.guid]
-  
+
 }
