@@ -16,8 +16,8 @@
     margin:0;
   }
     figure{
-      height: 100%;
-      width: 100%;
+      height: 50%;
+      width: 50%;
       margin:0;
     }
   </style>
@@ -32,6 +32,7 @@
       <g width="800" height="200" transform="translate(0,300)"class="timeline"></g>
     </svg> -->
   </figure>
+  <figure class='figure1'></figure>
 
   <script type="text/javascript">(function(){
 
@@ -44,11 +45,24 @@
     tree.emit('show-events', true)
     tree.emit('dragging', true)
 
+    var f2 = nflow.create('f2').parent(null)
+
+    var tree2 =  nflowVis.Vis(null)
+      .call(nflowVis.Tree)
+    tree2.emit('track', f2)
+    tree2.emit('dom', d3.select('.figure1').node())
+    tree2.emit('show-events', true)
+    tree2.emit('dragging', true)
+
     let noop = function handler(){}
     var a = f.create('a')
-    a.cancel()
 
     nflow.create('x').parent(a)
+    nflow.create('x').parent(a)
+
+    setTimeout(()=>a.parent(f2),1000)
+    setTimeout(()=>a.parent(f),2000)
+
   }())</script>
 
 </body>

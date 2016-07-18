@@ -15,7 +15,7 @@ export default (parent)=>{
   function parseAction(name, ...data){
     var s = f.emit('get-model').data()
     if (actions[name]) {
-      createParent(s, name, ...data)
+      createUntrackedParent(s, name, ...data)
       actions[name](s, ...data)
       updateProps(s, name, ...data)
       throttledUpdate()
@@ -36,11 +36,11 @@ export default (parent)=>{
   }
 }
 
-function createParent(s, name, f, newData, oldData){
+function createUntrackedParent(s, name, f, newData, oldData){
   var e = s.nodeMap[f.guid]
   if (!e){
     let e = createNode(f,s)
-    utils.updateHash(s.root)
+    utils.updateHash(e)
   }
 }
 
@@ -80,20 +80,19 @@ actions.start = (s, f, newData, oldData)=>{
 
 actions.create = (s, f, newData, oldData)=>{
   if (!s.root.children.length) actions.start(s, f, s)
-
-    var p = s.nodeMap[f.guid]
-    if (!p) return;
-    p.children = p.children || [];
-    var existingNode = p.children.filter(c=>c.name==newData.name).pop()
-    var e = createNode(newData, s)
-    e.parent = p
-    // if (existingNode){
-    //   removeNode(existingNode,s)
-    //   s.nodeMap[newData.guid].numInstances+=existingNode.numInstances
-    //   s.nodeMap[newData.guid].isNew= false
-    // }
-    p.children.push(e)
-  }
+  var p = s.nodeMap[f.guid]
+  if (!p) return;
+  p.children = p.children || [];
+  var existingNode = p.children.filter(c=>c.name==newData.name).pop()
+  var e = createNode(newData, s)
+  e.parent = p
+  // if (existingNode){
+  //   removeNode(existingNode,s)
+  //   s.nodeMap[newData.guid].numInstances+=existingNode.numInstances
+  //   s.nodeMap[newData.guid].isNew= false
+  // }
+  p.children.push(e)
+}
 
 actions.emit = (s, f, newData, oldData)=>{
   var e = s.nodeMap[newData.guid]
@@ -124,12 +123,10 @@ actions.data = (s, f, newData, oldData)=>{
   utils.updateHash(e)
 }
 
-
-
 actions.cancel = (s, f, newData, oldData)=>{
   var e = s.nodeMap[f.guid]
   e.status = 'CANCELLED'
-  utils.updateHash(e)
+  utils.updateHash(e, true)
 }
 
 actions.parented =noop;
@@ -137,7 +134,7 @@ actions.parented =noop;
 actions.parent = (s, f, newParent, oldParent)=>{
   var e = s.nodeMap[f.guid]
   if (!e) return
-  utils.updateHash(e)
+  utils.updateHash(e, true)
   // remove child from old parent
   var oldP = e.parent
   var newP = newParent && s.nodeMap[newParent.guid]
@@ -147,7 +144,7 @@ actions.parent = (s, f, newParent, oldParent)=>{
     if (newP) {
       oldP.children = oldP.children.filter(n=>n.guid!=f.guid)
     }
-    utils.updateHash(oldP)
+    utils.updateHash(oldP, true)
   }
 
   // add to new parent
@@ -155,7 +152,7 @@ actions.parent = (s, f, newParent, oldParent)=>{
     newP.children = newP.children || [];
     newP.children.push(e)
     e.parent = newP
-    utils.updateHash(newP)
+    utils.updateHash(newP, true)
   }
   e.isUnparented = !newP
 }

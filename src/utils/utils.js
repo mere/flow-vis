@@ -2,7 +2,7 @@ var utils = {}
 
 utils.parentCancelled = node=>{
   if (!node) return false
-  return node.f.status =='CANCELLED' 
+  return node.f.status =='CANCELLED'
     || utils.parentCancelled(node.parent)
 }
 
@@ -12,21 +12,21 @@ utils.hasNoRecipients = node=>{
 }
 
 utils.isRecipient = (node,s)=>{
-  if (!node 
-    || !s.showRoute 
-    || !s.showRoute.f.recipients) 
+  if (!node
+    || !s.showRoute
+    || !s.showRoute.f.recipients)
     return false
-  
+
   return s.showRoute.f.recipients
     .some(f=>f.flow.guid==node.f.guid)
 }
 
 utils.isEmitter = (node,s)=>{
-  if (!node 
-    || !s.showRoute 
-    || !s.showRoute.f.recipients) 
+  if (!node
+    || !s.showRoute
+    || !s.showRoute.f.recipients)
     return false
-  
+
   return s.showRoute.f.parent.guid==node.f.guid
 }
 
@@ -35,9 +35,9 @@ utils.isEmitter = (node,s)=>{
  * from an event chain
  */
 utils.isEntryPoint = (node,s)=>{
-  if (!node 
-    || !s.showRoute 
-    || !s.showRoute.f.recipients) 
+  if (!node
+    || !s.showRoute
+    || !s.showRoute.f.recipients)
     return false
 
   let entryPoint = s.showRoute
@@ -71,7 +71,7 @@ utils.fitText = function(maxWidth){
     r = Math.min(r,1)
     d3text
       .style('font-size', (r*fontSize)+'px')
-    
+
   }
 }
 utils.wrapText = function(maxWidth) {
@@ -94,7 +94,7 @@ utils.wrapText = function(maxWidth) {
          .attr("x", x)
          .attr("y", y)
          .attr("dy", dy + "em");
-  
+
     while (word = words.pop()) {
       line.push(word);
       tspan.text(line.join(""));
@@ -114,8 +114,11 @@ utils.wrapText = function(maxWidth) {
 }
 
 
-utils.updateHash = (d)=>{
+utils.updateHash = (d, recursive)=>{
   d.hash = createGuid()
+  recursive
+    && d.children
+    && d.children.forEach(f=>utils.updateHash(f, recursive))
 }
 
 function createGuid(){
