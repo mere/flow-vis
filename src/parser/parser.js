@@ -37,7 +37,7 @@ export default (parent)=>{
     nflow.logger((flow, name, newData, oldData)=>{
 
       // avoid circular tracking
-      if (flow.parents.has(f.parent())) return
+      //if (flow.parents.has(f.parent())) return
 
       // only track subnodes of the root node
       // if (!model.nodeMap[flow.guid()]) {
