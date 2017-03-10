@@ -1,5 +1,5 @@
 import './debug.scss'
-
+import d3 from 'd3'
 import nflow from 'nflow'
 import Parser from '../parser/parser'
 import Tree from '../tree/tree'
@@ -30,21 +30,21 @@ function dom(dom){
   var d = flow.data()
   d.d3dom = d3.select(dom)
     .html(tpl)
-  
+
   d.d3tree = d.d3dom.select('.nflow-tree')
   d.d3timeline = d.d3dom.select('.nflow-timeline')
   d.d3inspector = d.d3dom.select('.nflow-inspector')
-  
+
   var tree =  flow.get('tree')
   tree.emit.downstream('dom', d.d3tree.node())
   tree.emit.downstream('show-events', false)
- 
+
   flow.get('timeline')
     .emit.downstream('dom', d.d3timeline.node())
-  
+
   flow.get('inspector')
     .emit.downstream('dom', d.d3inspector.node())
-  
+
 }
 
 function stop(){
@@ -60,7 +60,7 @@ function resize(){
   d.d3tree
     .attr('width', w)
     .attr('height', h)
-  
+
   d.d3timeline
     .attr('width', w)
     .attr('height', TIMELINE_HEIGHT)
@@ -79,7 +79,7 @@ function reset(){
       snapOffset: 10,
       onDrag:()=>this.emit('resize')
     })
-  
+
 
   split(['.nflow-tree', '.nflow-timeline'], {
       direction: 'vertical',
@@ -92,7 +92,7 @@ function reset(){
     })
   // var d3timeline = d3.select('.nflow-timeline')
   // var d3tree = d3.select('.nflow-tree')
-  
+
   // vis && vis.dispose()
   // vis = nflowVis.Vis()
   // d3.select(window).on('resize.tree', ()=>vis.emit('resize'))
@@ -101,7 +101,7 @@ function reset(){
   // tree = nflowVis.Tree(vis)
   // tree.emit.downstream('dom', d3tree.node())
   // tree.emit.downstream('show-events', false)
-  
+
   // timeline = nflowVis.Timeline(vis)
   // timeline.emit.downstream('dom', d3timeline.node())
 

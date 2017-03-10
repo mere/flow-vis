@@ -250,6 +250,9 @@ function fitContents(){
 
 function render(){
   let d = this.target.data()
+  setTimeout(()=>{
+    this.emit('updated')
+  }, d.duration+1)
   // d.d3links
   //   .selectAll('.link')
   //   .data(d.links)
