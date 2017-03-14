@@ -8,7 +8,7 @@ export default (parent)=>(
     .data({
       dom: null,
       diagonal: d3.svg.diagonal()
-    })    
+    })
     .on('dom'   , dom)
     .on('update', render)
 )
@@ -25,21 +25,22 @@ function dom(dom){
   let d = this.target.data()
   let td = tree.data()
   let d3dom = td.d3nodes
-  
+
   if (!td.nodes) return;
-  
+
   let nodes = td.nodes.filter(e=>!e.hidden)
   // Update the nodes
   var node = d3dom.selectAll("g.node")
     .data(nodes, function(d) {return d.f.guid })
-  
+
   var nodeEnter = node.enter().append("g")
     .attr("class", "node")
     .style("opacity", 0)
     .attr("transform", function(d) {
       return "translate(" + d.x0 + "," + d.y0 + ")"; })
-    .on("click", d=>flow.emit('select-node', d.f))
-    
+    .on("mouseover", d=>flow.emit('select-node', d.f))
+    .on("mouseout", d=>flow.emit('select-node', null))
+
   nodeEnter.append('rect')
     .classed('text-bg', true)
 
@@ -66,10 +67,10 @@ function dom(dom){
       return d.needsUpdate
     })
 
-  
 
 
-  
+
+
   //console.log('changedNodes', changedNodes.size())
   var nodeUpdate = changedNodes
     .transition()
@@ -98,11 +99,11 @@ function dom(dom){
               .attr("height", bbox.height + (padding.y*2))
         })
     });
-  
+
   changedNodes
     .select('path')
     .classed('is-flow', d=>d.f.isEvent)
-  
+
   changedNodes
     .classed('is-cancelled', d=>d.f.status=='CANCELLED')
     .classed('is-parent-cancelled', d=>utils.parentCancelled(d))
@@ -110,7 +111,7 @@ function dom(dom){
     .classed('has-no-recipients', d=>utils.hasNoRecipients(d))
     .classed('is-emitter', d=>d.f.isEmitter)
     .call(listeners)
-  
+
   nodeUpdate
     .select("path")
     .attr('d', d=>d.f.isEvent? DROP : CIRCLE)
@@ -145,4 +146,3 @@ function listeners(sel){
 
   e.exit().remove()
 }
-

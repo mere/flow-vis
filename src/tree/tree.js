@@ -20,6 +20,7 @@ export default (parent)=>(
       links:null,
       maxBatchLength: 7,
       nodesize:{ width:100, height:80},
+
       clonedNodes : {}
     })
     .on('update', update
@@ -75,13 +76,14 @@ function update(d){
     fd.nodes = tree.nodes(root)//.reverse(),
     fd.links = tree.links(fd.nodes);
     fd.nodeMap = {}
+    let minLeft = d3.min(fd.nodes, d=>d.x)
     fd.nodes.forEach(function(d) {
       if (!fd.nodesByDepth[d.depth]) fd.nodesByDepth[d.depth] = []
 
       fd.nodesByDepth[d.depth].push(d)
       fd.nodeMap[d.f.guid]= d
       //d.y = d.depth * (root.hidden?40:fd.nodesize.height)+ (root.hidden?0:fd.nodesize.height);
-      d.x+=fd.width/2
+      d.x-=minLeft-20//fd.width/2
       d.y-=fd.nodesize.height>>1
 
       d.hidden = d.f.hidden
@@ -146,20 +148,13 @@ function setType(type='tree'){
             .filter(e=>!e.isEvent)
             .map(e=>cloneNode(e,d))
       ))
-
-
 }
-
-
-
-
 
 function cloneNode(e,d){
   if (!d.clonedNodes[e.guid])
     d.clonedNodes[e.guid] = { f:e }
   return d.clonedNodes[e.guid]
 }
-
 
 function init(){
   let d = this.target.data()
@@ -172,7 +167,6 @@ function init(){
     .classed('nflow-vis-tree', true)
     .append('g')
     .classed('drag', true)
-
 
 
   d.zoom = d3.behavior.zoom()
@@ -244,30 +238,35 @@ function moveContents(d){
     .attr("transform", "translate(" + t + ")scale(" + s + ")");
 }
 
-function fitContents(){
-
-}
+function fitContents(){}
 
 function render(){
   let d = this.target.data()
   setTimeout(()=>{
     this.emit('updated')
-  }, d.duration+1)
+  }, d.duration + 1)
   // d.d3links
   //   .selectAll('.link')
   //   .data(d.links)
-
 }
 
 function resize(){
   let d = this.target.data()
   let d3dom = d3.select(d.dom)
-  d.width = d.isSVG
+  let w = d.isSVG
     ? parseInt(d3dom.attr('width'))
     : parseInt(d3dom.style('width'))
-  d.height = d.isSVG
+  let h = d.isSVG
     ? parseInt(d3dom.attr('height'))
     : parseInt(d3dom.style('height'))
+  w = w^0
+  h = h^0
+  if (d.width === w && d.height === h ) {
+    this.stopPropagation()
+    return
+  }
+  d.width = w;
+  d.height = h;
 
   d.d3svg
     .attr("width", d.width)

@@ -7,7 +7,7 @@ export default (parent)=>(
     .parent(parent)
     .data({
       dom: null,
-    })    
+    })
     .on('dom'   , dom)
     .on('update', render)
 )
@@ -24,8 +24,8 @@ var nodeEnter = node.enter().append("g")
     .style("opacity", 0)
     .attr("transform", function(d) {
       return "translate(" + d.x0 + "," + d.y0 + ")"; })
-    .on("click", d=>flow.emit('select-node', d))
-    
+    .on("mouseover", d=>flow.emit('select-node', d))
+    .on("mouseout", d=>flow.emit('select-node', null))
 
   nodeEnter.append('path')
     .attr("transform", "scale(.8)")
@@ -46,7 +46,7 @@ var nodeEnter = node.enter().append("g")
     .filter(d=>{
       return d.needsUpdate
     })
-  
+
   //console.log('changedNodes', changedNodes.size())
   var nodeUpdate = changedNodes
     .transition()
@@ -62,11 +62,11 @@ var nodeEnter = node.enter().append("g")
         .each(utils.wrapText(120))
         .each(utils.fitText(70))
     });
-  
+
   changedNodes
     .select('path')
     .classed('is-flow', d=>d.f.isEvent)
-  
+
   changedNodes
     .classed('is-cancelled', d=>d.f.status=='CANCELLED')
     .classed('is-parent-cancelled', d=>utils.parentCancelled(d))
@@ -74,7 +74,7 @@ var nodeEnter = node.enter().append("g")
     .classed('has-no-recipients', d=>utils.hasNoRecipients(d))
     .classed('is-emitter', d=>utils.isEntryPoint(d,td))
     .call(listeners)
-  
+
   nodeUpdate
     .select("path")
     .attr('d', d=>d.f.isEvent? DROP : CIRCLE)
