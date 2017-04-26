@@ -6,7 +6,18 @@
   transform-origin: 0 0;
 }
 
+.is-disposed .node-label{
+  fill: #DDDDDD;
+}
+
 .text-bg{
   fill: #ffffff;
+  opacity: .5;
+}
+
+.has-data {
+  stroke: #AAAAAA;
+  fill: #DDDDDD;
+  stroke-width: 1px;
   opacity: .5;
 }

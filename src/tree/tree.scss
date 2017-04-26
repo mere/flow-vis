@@ -11,8 +11,8 @@ body, html {
 }
 
 .nflow-vis-tree{
-  
-  
+
+
   .timeline-bg rect{
     fill: none;
     stroke: #eeeeee;
@@ -28,19 +28,19 @@ body, html {
         stroke: #159957;
         stroke-width: 2px;
       }
-      
+
       path.is-flow {
         fill: #C1E0F5;
         stroke: #1f8dd6;
       }
-      
+
       &.is-parent-cancelled path.is-flow {
         stroke: #F68E8E;
       }
 
     }
 
-    
+
   .listener {
     fill: #C1E0F5;
     stroke: none;
@@ -63,11 +63,15 @@ body, html {
   }
 
   .is-cancelled .listener {
-    fill: #F5C1C1;  
+    fill: #F5C1C1;
   }
   .node.is-cancelled path,
   .node.is-cancelled path.is-flow {
     stroke: #991515;
+  }
+  .node.is-disposed path,
+  .node.is-disposed path.is-flow {
+    stroke: #DDDDDD;
   }
 
   .is-recipient path {

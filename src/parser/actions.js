@@ -71,6 +71,25 @@ actions.listenerRemoved = (s, f, newData, oldData)=>{
   utils.updateHash(e)
 }
 
+actions.status = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[f.guid]
+  if (!e) return
+  utils.updateHash(e)
+}
+
+actions.direction = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[f.guid]
+  if (!e) return
+  utils.updateHash(e)
+}
+
+actions.dispose = (s, f, newData, oldData)=>{
+  var e = s.nodeMap[f.guid]
+  if (!e) return
+  e.isDisposed = true
+  utils.updateHash(e)
+}
+
 actions.start = (s, f, newData, oldData)=>{
   let e = createNode(newData,s)
   s.root.children.push(e)

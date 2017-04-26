@@ -76,14 +76,21 @@ function update(d){
     fd.nodes = tree.nodes(root)//.reverse(),
     fd.links = tree.links(fd.nodes);
     fd.nodeMap = {}
-    let minLeft = d3.min(fd.nodes, d=>d.x)
+    let minX = d3.min(fd.nodes, d=>d.x)-40
+    let maxX = d3.max(fd.nodes, d=>d.x)+40
+    let maxY = d3.max(fd.nodes, d=>d.y)
+
+    fd.width = maxX-minX;
+    fd.height = maxY;
+
+    resizeSVG(fd)
     fd.nodes.forEach(function(d) {
       if (!fd.nodesByDepth[d.depth]) fd.nodesByDepth[d.depth] = []
 
       fd.nodesByDepth[d.depth].push(d)
       fd.nodeMap[d.f.guid]= d
       //d.y = d.depth * (root.hidden?40:fd.nodesize.height)+ (root.hidden?0:fd.nodesize.height);
-      d.x-=minLeft-20//fd.width/2
+      d.x-=minX//fd.width/2
       d.y-=fd.nodesize.height>>1
 
       d.hidden = d.f.hidden
@@ -250,6 +257,16 @@ function render(){
   //   .data(d.links)
 }
 
+function resizeSVG(d){
+  d.d3svg
+    .attr("width", d.width)
+    .attr("height", d.height);
+
+  d.d3overlay
+    .attr("width", d.width)
+    .attr("height", d.height);
+}
+
 function resize(){
   let d = this.target.data()
   let d3dom = d3.select(d.dom)
@@ -268,11 +285,5 @@ function resize(){
   d.width = w;
   d.height = h;
 
-  d.d3svg
-    .attr("width", d.width)
-    .attr("height", d.height);
-
-  d.d3overlay
-    .attr("width", d.width)
-    .attr("height", d.height);
+  resizeSVG(d)
 }

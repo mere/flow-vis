@@ -24,7 +24,7 @@
     display: block;
     animation: dash-downstream .5s linear infinite;
   }
-  
+
   &[data-direction="1"] .link-up,
   &[data-direction="3"] .link-up{
     display: block;
@@ -52,4 +52,8 @@
 
 .link:not(.is-flow).is-removed{
   stroke: rgba(255,0,0,.05);
+}
+.link:not(.is-flow).is-disposed{
+  stroke: #EEEEEE;
+
 }
