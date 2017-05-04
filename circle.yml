@@ -1,11 +1,32 @@
-
-deployment:
-  npm:
-    branch: master
-    commands:
-      # login using environment variables
-      - echo -e "$NPM_USERNAME\n$NPM_PASSWORD\n$NPM_EMAIL" | npm login
-      - npm run publish-to-npm
+general:
+  branches:
+    ignore:
+      - gh-pages
+      - /release.*/
 machine:
+  environment:
+    PATH: './node_modules/.bin:$PATH'
   node:
-    version: 4.2.1
+      version: 6.1.0
+  pre:
+    - node --version
+    - git config --global user.name "mere"
+    - git config --global user.email "github@zoltanb.co.uk"
+dependencies:
+  pre:
+    - echo -e "$NPM_USER\n$NPM_PASS\n$NPM_EMAIL" | npm login
+  post:
+    - nca run echo "before update-modules"
+    - nca run nca notice update-modules
+    - nca run echo "after update-modules"
+deployment:
+  create_release_branch:
+    branch:
+      - master
+    commands:
+      - nca run echo "before release"
+      - nca release --prefix v --shrinkwrap
+      - nca run echo "after release"
+      - nca run echo "before gh-pages"
+      - nca run nca notice gh-pages
+      - nca run echo "after gh-pages"
